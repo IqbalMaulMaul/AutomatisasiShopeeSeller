@@ -1,12 +1,16 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import { Plus_Jakarta_Sans } from 'next/font/google';
 import './globals.css';
 
-const inter = Inter({ subsets: ['latin'] });
+const plusJakartaSans = Plus_Jakarta_Sans({
+  subsets: ['latin'],
+  variable: '--font-plus-jakarta',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
-  title: 'JakMall to Shopee Listing Automation | PoC',
-  description: 'Ekstraksi otomatis katalog JakMall dan penerbitan produk ke Shopee Seller Center.',
+  title: 'JakMall → Shopee Automation Hub | Seller Suite',
+  description: 'Ekstraksi otomatis katalog JakMall, kalkulasi margin, dan penerbitan produk ke Shopee Seller Center.',
 };
 
 export default function RootLayout({
@@ -15,10 +19,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="id" className="h-full bg-slate-900 text-slate-100" suppressHydrationWarning>
-      <body className={`${inter.className} min-h-full flex flex-col antialiased bg-slate-950 text-slate-100`} suppressHydrationWarning>
+    <html lang="id" className={`h-full dark ${plusJakartaSans.variable}`} suppressHydrationWarning>
+      <body
+        className={`${plusJakartaSans.className} min-h-full flex flex-col antialiased bg-[#090D16] text-slate-100 selection:bg-emerald-500 selection:text-white`}
+        suppressHydrationWarning
+      >
         {children}
       </body>
     </html>
   );
 }
+
