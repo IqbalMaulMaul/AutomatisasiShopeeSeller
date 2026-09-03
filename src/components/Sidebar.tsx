@@ -51,22 +51,21 @@ export const Sidebar: React.FC<SidebarProps> = ({
     },
   ];
 
-
   return (
-    <aside className="w-64 bg-white border-r border-slate-200 flex flex-col justify-between p-5 min-h-screen shrink-0">
+    <aside className="w-64 bg-white border-r border-slate-200 flex flex-col justify-between p-5 h-screen sticky top-0 shrink-0 z-30 shadow-sm">
       <div className="space-y-6">
         {/* Brand Header */}
-        <div className="flex items-center gap-3 px-2">
-          <div className="w-10 h-10 rounded-xl overflow-hidden bg-slate-100 border border-slate-200 shadow-sm shrink-0">
+        <div className="flex items-center gap-3 px-1">
+          <div className="w-10 h-10 shrink-0 flex items-center justify-center">
             <img
               src="/logo-jualin.png"
               alt="Jualin Logo"
-              className="w-full h-full object-cover"
+              className="w-full h-full object-contain filter drop-shadow-sm"
             />
           </div>
           <div>
-            <h1 className="text-lg font-bold text-slate-900 leading-tight">Jualin</h1>
-            <p className="text-[11px] text-slate-500 font-medium">Shopee Automation Hub</p>
+            <h1 className="text-lg font-black text-slate-900 leading-none">Jualin</h1>
+            <p className="text-[11px] text-slate-500 font-medium mt-0.5">Shopee Automation Hub</p>
           </div>
         </div>
 

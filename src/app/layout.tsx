@@ -11,10 +11,10 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 export const metadata: Metadata = {
   title: 'Jualin | Shopee Seller Automation Suite',
   description: 'Aplikasi otomatisasi ekstraksi katalog produk JakMall, kalkulasi margin profit, dan listing ke Shopee Seller Center.',
-  icons: {
-    icon: '/logo-jualin.png',
-    apple: '/logo-jualin.png',
-  },
+  icons: [
+    { rel: 'icon', url: '/logo-jualin.png' },
+    { rel: 'apple-touch-icon', url: '/logo-jualin.png' },
+  ],
 };
 
 export default function RootLayout({
@@ -23,9 +23,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="id" className={`h-full dark ${plusJakartaSans.variable}`} suppressHydrationWarning>
+    <html lang="id" className={`h-full ${plusJakartaSans.variable}`} suppressHydrationWarning>
       <body
-        className={`${plusJakartaSans.className} min-h-full flex flex-col antialiased bg-[#070A12] text-slate-100 selection:bg-blue-500 selection:text-white`}
+        className={`${plusJakartaSans.className} min-h-full flex flex-col antialiased bg-[#F8FAFC] text-slate-900 selection:bg-indigo-600 selection:text-white`}
         suppressHydrationWarning
       >
         {children}
