@@ -17,7 +17,6 @@ interface HeaderProps {
 
 export const Header: React.FC<HeaderProps> = ({
   title = 'Jualin ➔ Shopee Automation Hub',
-  subtitle = 'PoC Assessment — Buruh Ketik Candidate Test',
   onDownloadAllExcel,
   onRefresh,
   productCount,
@@ -26,7 +25,6 @@ export const Header: React.FC<HeaderProps> = ({
     <header className="bg-white border-b border-slate-200 px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 sticky top-0 z-20">
       <div>
         <h2 className="text-xl font-bold text-slate-900 leading-tight">{title}</h2>
-        <p className="text-xs text-slate-500 font-medium">{subtitle}</p>
       </div>
 
       <div className="flex items-center gap-3">

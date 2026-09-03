@@ -56,15 +56,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
       <div className="space-y-6">
         {/* Brand Header */}
         <div className="flex items-center gap-3 px-1">
-          <div className="w-10 h-10 shrink-0 flex items-center justify-center">
+          <div className="w-11 h-11 shrink-0 flex items-center justify-center">
             <img
               src="/logo-jualin.png"
               alt="Jualin Logo"
-              className="w-full h-full object-contain filter drop-shadow-sm"
+              className="w-full h-full object-contain"
             />
           </div>
           <div>
-            <h1 className="text-lg font-black text-slate-900 leading-none">Jualin</h1>
+            <h1 className="text-xl font-black text-slate-900 leading-none">Jualin</h1>
             <p className="text-[11px] text-slate-500 font-medium mt-0.5">Shopee Automation Hub</p>
           </div>
         </div>
@@ -116,8 +116,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <h4 className="text-xs font-bold text-white truncate">Shopee: IqbalMaulMaul</h4>
           </div>
         </div>
-        <div className="flex items-center justify-between pt-1 border-t border-white/20 text-[10px]">
-          <span className="text-indigo-100">Status Sesi:</span>
+        <div className="flex items-center justify-end pt-1 border-t border-white/20 text-[10px]">
           <span className="px-2 py-0.5 rounded-full bg-emerald-400/20 text-white font-bold border border-emerald-300/30">
             ● Aktif
           </span>
