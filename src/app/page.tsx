@@ -28,6 +28,11 @@ import {
   Zap,
   Tag,
   TrendingUp,
+  PackageCheck,
+  PackagePlus,
+  Rocket,
+  Search,
+  Filter,
 } from 'lucide-react';
 import { ShopeeProductMapping, PublishResult } from '@/types/product';
 
@@ -51,6 +56,7 @@ export default function DashboardPage() {
   const [showBrowserWindow, setShowBrowserWindow] = useState(true);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
   const [activeTab, setActiveTab] = useState<'all' | 'ready' | 'published'>('all');
+  const [searchQuery, setSearchQuery] = useState('');
 
   // Preset demo URLs
   const sampleUrls = [
@@ -196,35 +202,46 @@ export default function DashboardPage() {
     }
   };
 
-  const filteredProducts = products.filter((p) => {
-    if (activeTab === 'ready') return p.status === 'EXTRACTED' || p.status === 'REVIEWED';
-    if (activeTab === 'published') return p.status === 'PUBLISHED';
-    return true;
-  });
+  const filteredProducts = products
+    .filter((p) => {
+      if (activeTab === 'ready') return p.status === 'EXTRACTED' || p.status === 'REVIEWED';
+      if (activeTab === 'published') return p.status === 'PUBLISHED';
+      return true;
+    })
+    .filter((p) => {
+      if (!searchQuery.trim()) return true;
+      return p.title.toLowerCase().includes(searchQuery.toLowerCase()) || p.sku.toLowerCase().includes(searchQuery.toLowerCase());
+    });
+
+  const readyCount = products.filter((p) => p.status === 'EXTRACTED' || p.status === 'REVIEWED').length;
+  const publishedCount = products.filter((p) => p.status === 'PUBLISHED').length;
 
   return (
     <div className="min-h-screen bg-[#070A12] text-slate-100 flex flex-col font-sans relative overflow-x-hidden">
-      {/* Background Ambient Glows */}
-      <div className="fixed top-0 left-1/4 w-[600px] h-[350px] bg-emerald-500/10 rounded-full blur-[140px] pointer-events-none -z-10" />
-      <div className="fixed top-1/3 right-10 w-[500px] h-[400px] bg-indigo-600/10 rounded-full blur-[160px] pointer-events-none -z-10" />
+      {/* Background Ambient Glow Effects */}
+      <div className="fixed top-0 left-1/3 w-[700px] h-[350px] bg-blue-600/10 rounded-full blur-[160px] pointer-events-none -z-10" />
+      <div className="fixed bottom-10 right-10 w-[500px] h-[400px] bg-amber-500/10 rounded-full blur-[180px] pointer-events-none -z-10" />
 
-      {/* Header Bar */}
-      <header className="border-b border-slate-800/80 bg-[#0B0F19]/80 backdrop-blur-xl sticky top-0 z-30 shadow-2xl">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between">
-          {/* Logo & Title */}
+      {/* Jualin Brand Top Navbar */}
+      <header className="border-b border-slate-800/80 bg-[#0B0F19]/90 backdrop-blur-2xl sticky top-0 z-30 shadow-2xl">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+          {/* Logo & Brand Identity */}
           <div className="flex items-center gap-3.5">
-            <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-emerald-500 via-teal-500 to-cyan-500 p-0.5 shadow-lg shadow-emerald-500/20">
-              <div className="w-full h-full bg-[#0B0F19] rounded-[14px] flex items-center justify-center">
-                <ShoppingBag className="w-5 h-5 text-emerald-400" />
+            <div className="relative group cursor-pointer">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-blue-600 via-indigo-500 to-amber-500 p-0.5 shadow-xl shadow-blue-500/20 group-hover:scale-105 transition-transform duration-300">
+                <img
+                  src="/logo-jualin.png"
+                  alt="Jualin Logo"
+                  className="w-full h-full object-cover rounded-[14px] bg-[#0A0E1A]"
+                />
               </div>
             </div>
             <div>
               <div className="flex items-center gap-2.5">
-                <h1 className="text-lg font-extrabold tracking-tight text-white flex items-center gap-2">
-                  <span>JakMall</span>
-                  <span className="text-emerald-400 font-bold">➔</span>
-                  <span className="bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent">
-                    Shopee Automation Hub
+                <h1 className="text-2xl font-black tracking-tight text-white flex items-center gap-1.5 font-sans">
+                  <span>Jualin</span>
+                  <span className="text-xs px-2 py-0.5 rounded-full font-bold bg-blue-500/10 text-blue-400 border border-blue-500/30">
+                    v2.0 Enterprise
                   </span>
                 </h1>
                 <span className="hidden md:inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
@@ -233,28 +250,28 @@ export default function DashboardPage() {
                 </span>
               </div>
               <p className="text-[11px] text-slate-400 font-medium">
-                PoC Assessment — Buruh Ketik Candidate Test
+                Automation Hub & Shopee Seller Suite — PoC Assessment Candidate
               </p>
             </div>
           </div>
 
-          {/* Action Buttons */}
-          <div className="flex items-center gap-2.5">
+          {/* Top Actions */}
+          <div className="flex items-center gap-3">
             <a
               href="https://seller.shopee.co.id"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700/60 text-slate-200 hover:text-white transition-all text-xs font-semibold shadow-sm"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700/60 text-slate-200 hover:text-white transition-all text-xs font-bold shadow-sm"
             >
-              <ExternalLink className="w-3.5 h-3.5 text-emerald-400" />
+              <ExternalLink className="w-3.5 h-3.5 text-blue-400" />
               <span className="hidden sm:inline">Shopee Seller Portal</span>
             </a>
             <button
               onClick={() => handleDownloadExcel()}
               disabled={products.length === 0}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 hover:from-emerald-500 hover:to-cyan-500 text-white shadow-lg shadow-emerald-900/30 transition-all text-xs font-bold disabled:opacity-40 disabled:cursor-not-allowed active:scale-95"
+              className="inline-flex items-center gap-2 px-4.5 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-amber-500 hover:from-blue-500 hover:to-amber-400 text-white shadow-xl shadow-blue-900/30 transition-all text-xs font-black disabled:opacity-40 disabled:cursor-not-allowed active:scale-95"
             >
-              <FileSpreadsheet className="w-4 h-4 text-emerald-200" />
+              <FileSpreadsheet className="w-4 h-4 text-blue-100" />
               <span>Export All (Shopee Excel)</span>
             </button>
             <button
@@ -268,98 +285,143 @@ export default function DashboardPage() {
         </div>
       </header>
 
-      {/* Main Container */}
+      {/* Main Dashboard Container */}
       <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-        {/* Top Control Grid: URL Extractor & Rule Calculator */}
-        <section className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Main Extraction Form (2 Columns) */}
-          <div className="lg:col-span-2 glass-panel rounded-3xl p-6 sm:p-7 shadow-2xl relative overflow-hidden flex flex-col justify-between">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+        
+        {/* NEW WIREFRAME SECTION 1: 4-Column Metric Stat Overview Cards */}
+        <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          {/* Stat 1: Total Products */}
+          <div className="glass-panel p-5 rounded-2xl border border-slate-800 flex items-center justify-between shadow-lg relative overflow-hidden group">
+            <div className="space-y-1">
+              <span className="text-xs text-slate-400 font-medium">Total Katalog Extracted</span>
+              <div className="text-2xl font-black text-white font-mono">{products.length} <span className="text-xs text-slate-400 font-sans font-normal">produk</span></div>
+            </div>
+            <div className="w-12 h-12 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 group-hover:scale-110 transition-transform">
+              <PackagePlus className="w-6 h-6" />
+            </div>
+          </div>
 
-            <div>
-              <div className="flex items-center gap-2.5 mb-4">
-                <div className="p-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
-                  <Sparkles className="w-5 h-5 text-emerald-400" />
+          {/* Stat 2: Ready to Upload */}
+          <div className="glass-panel p-5 rounded-2xl border border-slate-800 flex items-center justify-between shadow-lg relative overflow-hidden group">
+            <div className="space-y-1">
+              <span className="text-xs text-slate-400 font-medium">Siap Upload Shopee</span>
+              <div className="text-2xl font-black text-amber-400 font-mono">{readyCount} <span className="text-xs text-slate-400 font-sans font-normal">siap</span></div>
+            </div>
+            <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 group-hover:scale-110 transition-transform">
+              <Clock className="w-6 h-6" />
+            </div>
+          </div>
+
+          {/* Stat 3: Published */}
+          <div className="glass-panel p-5 rounded-2xl border border-slate-800 flex items-center justify-between shadow-lg relative overflow-hidden group">
+            <div className="space-y-1">
+              <span className="text-xs text-slate-400 font-medium">Terupload ke Shopee</span>
+              <div className="text-2xl font-black text-emerald-400 font-mono">{publishedCount} <span className="text-xs text-slate-400 font-sans font-normal">live</span></div>
+            </div>
+            <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 group-hover:scale-110 transition-transform">
+              <Rocket className="w-6 h-6" />
+            </div>
+          </div>
+
+          {/* Stat 4: Margin Config */}
+          <div className="glass-panel p-5 rounded-2xl border border-slate-800 flex items-center justify-between shadow-lg relative overflow-hidden group">
+            <div className="space-y-1">
+              <span className="text-xs text-slate-400 font-medium">Margin Keuntungan Aktif</span>
+              <div className="text-xl font-black text-cyan-400 font-mono">+{markupPercent}% <span className="text-xs text-slate-400 font-sans font-normal">+ Rp {formatRupiah(fixedMargin)}</span></div>
+            </div>
+            <div className="w-12 h-12 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 group-hover:scale-110 transition-transform">
+              <TrendingUp className="w-6 h-6" />
+            </div>
+          </div>
+        </section>
+
+        {/* NEW WIREFRAME SECTION 2: Split Dashboard Layout (Left Control Sidebar + Right Staging Workspace) */}
+        <section className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          
+          {/* LEFT CONTROL SIDEBAR (4 Columns) */}
+          <div className="lg:col-span-4 space-y-6">
+            
+            {/* Card A: Extractor Engine */}
+            <div className="glass-panel p-6 rounded-3xl space-y-5 border border-slate-800/80 shadow-2xl relative overflow-hidden">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 rounded-2xl bg-blue-500/10 border border-blue-500/20">
+                  <Sparkles className="w-5 h-5 text-blue-400" />
                 </div>
                 <div>
-                  <h2 className="text-base font-bold text-white">Ekstraksi Produk JakMall</h2>
-                  <p className="text-xs text-slate-400">Masukkan URL katalog produk JakMall untuk diproses secara otomatis</p>
+                  <h2 className="text-base font-bold text-white">Ekstraktor Produk JakMall</h2>
+                  <p className="text-xs text-slate-400">Penyedot katalog produk otomatis</p>
                 </div>
               </div>
 
               <form onSubmit={handleScrape} className="space-y-4">
-                <div className="flex flex-col sm:flex-row gap-3">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">URL Katalog JakMall</label>
                   <input
                     type="text"
-                    placeholder="Tempel URL katalog/produk JakMall (cth: https://www.jakmall.com/...)"
+                    placeholder="Tempel URL katalog JakMall di sini..."
                     value={urlInput}
                     onChange={(e) => setUrlInput(e.target.value)}
-                    className="flex-1 px-4 py-3.5 bg-[#0B0F19]/90 border border-slate-700/80 rounded-2xl text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all shadow-inner"
+                    className="w-full px-4 py-3 bg-[#0B0F19]/90 border border-slate-700/80 rounded-2xl text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all font-mono shadow-inner"
                   />
-                  <button
-                    type="submit"
-                    disabled={isScraping}
-                    className="px-6 py-3.5 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-white font-bold text-sm rounded-2xl shadow-xl shadow-emerald-500/25 flex items-center justify-center gap-2.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
-                  >
-                    {isScraping ? (
-                      <>
-                        <RefreshCw className="w-4 h-4 animate-spin text-white" />
-                        <span>Mengekstrak...</span>
-                      </>
-                    ) : (
-                      <>
-                        <span>Ekstrak & Normalisasi</span>
-                        <ArrowRight className="w-4 h-4" />
-                      </>
-                    )}
-                  </button>
                 </div>
 
-                {/* Preset Demo Buttons */}
-                <div className="flex flex-wrap items-center gap-2 pt-2">
-                  <span className="text-xs text-slate-400 font-semibold flex items-center gap-1">
-                    <Zap className="w-3.5 h-3.5 text-amber-400" /> Contoh Demo 1-Klik:
+                <button
+                  type="submit"
+                  disabled={isScraping}
+                  className="w-full py-3.5 bg-gradient-to-r from-blue-600 via-indigo-600 to-amber-500 hover:from-blue-500 hover:to-amber-400 text-white font-black text-xs rounded-2xl shadow-xl shadow-blue-600/25 flex items-center justify-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
+                >
+                  {isScraping ? (
+                    <>
+                      <RefreshCw className="w-4 h-4 animate-spin text-white" />
+                      <span>Mengekstrak Data...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>Ekstrak & Normalisasi</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </>
+                  )}
+                </button>
+
+                {/* Preset Demo Pills */}
+                <div className="space-y-2 pt-2 border-t border-slate-800/80">
+                  <span className="text-[11px] text-slate-400 font-bold flex items-center gap-1">
+                    <Zap className="w-3.5 h-3.5 text-amber-400" /> Preset Contoh Demo 1-Klik:
                   </span>
-                  {sampleUrls.map((s, idx) => (
-                    <button
-                      key={idx}
-                      type="button"
-                      onClick={() => setUrlInput(s.url)}
-                      className="text-xs px-3 py-1.5 rounded-xl bg-slate-800/80 hover:bg-slate-700/90 text-slate-300 border border-slate-700/60 transition-all font-medium hover:border-emerald-500/50"
-                    >
-                      {s.name}
-                    </button>
-                  ))}
+                  <div className="flex flex-col gap-1.5">
+                    {sampleUrls.map((s, idx) => (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => setUrlInput(s.url)}
+                        className="text-left text-xs px-3 py-2 rounded-xl bg-slate-800/70 hover:bg-slate-700/90 text-slate-300 border border-slate-700/60 transition-all font-medium flex items-center justify-between hover:border-blue-500/50"
+                      >
+                        <span className="truncate">{s.name}</span>
+                        <ArrowRight className="w-3 h-3 text-slate-500 flex-shrink-0" />
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </form>
             </div>
 
-            <div className="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
-              <span className="flex items-center gap-1.5">
-                <ShieldCheck className="w-4 h-4 text-emerald-400" /> Auto-Sanitasi Judul, Atribut & Deskripsi
-              </span>
-              <span className="text-slate-500 font-mono">Format Standard Shopee ID 2026</span>
-            </div>
-          </div>
-
-          {/* Pricing Rules & Bot Configuration (1 Column) */}
-          <div className="glass-panel rounded-3xl p-6 sm:p-7 shadow-2xl flex flex-col justify-between">
-            <div>
-              <div className="flex items-center gap-2.5 mb-5">
-                <div className="p-2 rounded-xl bg-cyan-500/10 border border-cyan-500/20">
-                  <Sliders className="w-5 h-5 text-cyan-400" />
+            {/* Card B: Margin & Rule Calculator */}
+            <div className="glass-panel p-6 rounded-3xl space-y-5 border border-slate-800/80 shadow-2xl">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 rounded-2xl bg-amber-500/10 border border-amber-500/20">
+                  <Sliders className="w-5 h-5 text-amber-400" />
                 </div>
                 <div>
-                  <h2 className="text-base font-bold text-white">Aturan Markup & Bot Demo</h2>
-                  <p className="text-xs text-slate-400">Penyesuaian margin & pengaturan automasi</p>
+                  <h2 className="text-base font-bold text-white">Aturan Margin & Bot Config</h2>
+                  <p className="text-xs text-slate-400">Kalkulasi harga modal ke Shopee</p>
                 </div>
               </div>
 
-              <div className="space-y-4 text-sm">
+              <div className="space-y-4 text-xs">
                 <div>
-                  <div className="flex justify-between text-xs text-slate-300 mb-2">
-                    <span className="font-medium text-slate-300">Margin Keuntungan (%)</span>
-                    <span className="font-bold text-emerald-400 px-2 py-0.5 bg-emerald-500/10 rounded-md border border-emerald-500/20">
+                  <div className="flex justify-between text-slate-300 mb-2">
+                    <span className="font-semibold">Margin Profit (%)</span>
+                    <span className="font-bold text-emerald-400 px-2 py-0.5 bg-emerald-500/10 rounded-md border border-emerald-500/20 font-mono">
                       +{markupPercent}%
                     </span>
                   </div>
@@ -370,252 +432,251 @@ export default function DashboardPage() {
                     step="5"
                     value={markupPercent}
                     onChange={(e) => setMarkupPercent(Number(e.target.value))}
-                    className="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-emerald-500"
+                    className="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-blue-500"
                   />
                 </div>
 
                 <div>
-                  <div className="flex justify-between text-xs text-slate-300 mb-1.5">
-                    <span className="font-medium text-slate-300">Biaya Admin / Packaging (Rp)</span>
-                    <span className="font-bold text-cyan-400">Rp {formatRupiah(fixedMargin)}</span>
+                  <div className="flex justify-between text-slate-300 mb-1.5">
+                    <span className="font-semibold">Biaya Admin / Packaging (Rp)</span>
+                    <span className="font-bold text-amber-400 font-mono">Rp {formatRupiah(fixedMargin)}</span>
                   </div>
                   <input
                     type="number"
                     step="500"
                     value={fixedMargin}
                     onChange={(e) => setFixedMargin(Number(e.target.value))}
-                    className="w-full px-3.5 py-2 bg-[#0B0F19]/90 border border-slate-700/80 rounded-xl text-xs text-slate-100 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 font-mono"
+                    className="w-full px-3.5 py-2 bg-[#0B0F19]/90 border border-slate-700/80 rounded-xl text-xs text-slate-100 focus:outline-none focus:border-amber-500 font-mono"
                   />
                 </div>
 
-                {/* Visible Window Toggle for Local Demo */}
+                {/* Visible Window Toggle */}
                 <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between">
-                  <span className="text-xs text-slate-300 font-medium">Buka Jendela Chrome Fisik (Local Demo)</span>
+                  <span className="text-slate-300 font-medium">Tampilkan Chrome Fisik (Demo)</span>
                   <input
                     type="checkbox"
                     checked={showBrowserWindow}
                     onChange={(e) => setShowBrowserWindow(e.target.checked)}
-                    className="w-4 h-4 rounded border-slate-700 bg-slate-900 accent-emerald-500 cursor-pointer"
+                    className="w-4 h-4 rounded border-slate-700 bg-slate-900 accent-blue-500 cursor-pointer"
                   />
                 </div>
               </div>
-            </div>
 
-            <div className="mt-5 pt-3 border-t border-slate-800/80 text-[11px] text-slate-400 font-mono bg-slate-900/50 p-2.5 rounded-xl border border-slate-800/60">
-              Rumus: <code className="text-emerald-300">(Harga Modal × (1 + {markupPercent}%)) + Rp {formatRupiah(fixedMargin)}</code>
-            </div>
-          </div>
-        </section>
-
-        {/* Product Staging Dashboard */}
-        <section className="space-y-5">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-800/80">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-xl bg-indigo-500/10 border border-indigo-500/20">
-                <Layers className="w-5 h-5 text-indigo-400" />
-              </div>
-              <div>
-                <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                  <span>Staging Area & Hasil Pemetaan</span>
-                  <span className="px-3 py-0.5 rounded-full text-xs font-extrabold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
-                    {products.length} Produk
-                  </span>
-                </h2>
+              <div className="text-[11px] text-slate-400 font-mono bg-slate-900/60 p-3 rounded-xl border border-slate-800/80 leading-relaxed">
+                Rumus: <code className="text-blue-300">(Modal × (1 + {markupPercent}%)) + Rp {formatRupiah(fixedMargin)}</code>
               </div>
             </div>
 
-            {/* Filter Tabs */}
-            <div className="flex items-center gap-1 bg-[#0B0F19] p-1.5 rounded-2xl border border-slate-800 text-xs">
-              <button
-                onClick={() => setActiveTab('all')}
-                className={`px-4 py-2 rounded-xl font-bold transition-all ${
-                  activeTab === 'all'
-                    ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-md'
-                    : 'text-slate-400 hover:text-slate-200'
-                }`}
-              >
-                Semua ({products.length})
-              </button>
-              <button
-                onClick={() => setActiveTab('ready')}
-                className={`px-4 py-2 rounded-xl font-bold transition-all ${
-                  activeTab === 'ready'
-                    ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-md'
-                    : 'text-slate-400 hover:text-slate-200'
-                }`}
-              >
-                Siap Upload ({products.filter((p) => p.status === 'EXTRACTED' || p.status === 'REVIEWED').length})
-              </button>
-              <button
-                onClick={() => setActiveTab('published')}
-                className={`px-4 py-2 rounded-xl font-bold transition-all ${
-                  activeTab === 'published'
-                    ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-md'
-                    : 'text-slate-400 hover:text-slate-200'
-                }`}
-              >
-                Terupload ({products.filter((p) => p.status === 'PUBLISHED').length})
-              </button>
-            </div>
           </div>
 
-          {filteredProducts.length === 0 ? (
-            <div className="glass-panel border-dashed border-slate-800 rounded-3xl p-14 text-center space-y-4">
-              <div className="w-16 h-16 rounded-2xl bg-slate-800/80 flex items-center justify-center mx-auto text-slate-500">
-                <ShoppingBag className="w-8 h-8" />
-              </div>
-              <h3 className="text-lg font-bold text-slate-200">Belum Ada Produk di Staging</h3>
-              <p className="text-xs text-slate-400 max-w-md mx-auto leading-relaxed">
-                Masukkan URL katalog JakMall pada form di atas atau klik salah satu contoh demo 1-klik untuk memulai ekstraksi data produk.
-              </p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredProducts.map((p) => (
-                <div
-                  key={p.id}
-                  className="glass-card glass-card-hover rounded-3xl overflow-hidden shadow-xl flex flex-col justify-between group border border-slate-800/80"
-                >
-                  <div>
-                    {/* Image Container & Floating Badges */}
-                    <div className="relative aspect-video w-full bg-[#050810] overflow-hidden">
-                      <img
-                        src={p.mainImage}
-                        alt={p.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-[#090D16] via-transparent to-transparent opacity-80" />
-
-                      <div className="absolute top-3 left-3">
-                        <span
-                          className={`px-3 py-1 rounded-xl text-[11px] font-extrabold backdrop-blur-xl shadow-lg border ${
-                            p.status === 'PUBLISHED'
-                              ? 'bg-emerald-500/80 text-white border-emerald-400/40 shadow-emerald-500/20'
-                              : p.status === 'UPLOADING'
-                              ? 'bg-amber-500/80 text-white border-amber-400/40 shadow-amber-500/20'
-                              : p.status === 'FAILED'
-                              ? 'bg-rose-500/80 text-white border-rose-400/40 shadow-rose-500/20'
-                              : 'bg-cyan-500/80 text-white border-cyan-400/40 shadow-cyan-500/20'
-                          }`}
-                        >
-                          {p.status}
-                        </span>
-                      </div>
-
-                      <div className="absolute bottom-3 right-3 bg-[#0B0F19]/90 backdrop-blur-md px-2.5 py-1 rounded-lg text-[11px] text-slate-300 font-mono border border-slate-700/60 shadow-md">
-                        {p.sku}
-                      </div>
-                    </div>
-
-                    {/* Card Content Info */}
-                    <div className="p-5 space-y-4">
-                      <h3 className="font-bold text-sm text-white line-clamp-2 leading-snug group-hover:text-emerald-300 transition-colors" title={p.title}>
-                        {p.title}
-                      </h3>
-
-                      {/* Price Comparison Container */}
-                      <div className="grid grid-cols-2 gap-2 text-xs p-3 bg-[#0B0F19]/90 rounded-2xl border border-slate-800">
-                        <div>
-                          <span className="text-slate-400 block text-[10px] font-medium">Harga Modal JakMall</span>
-                          <span className="font-semibold text-slate-300 font-mono">
-                            Rp {formatRupiah(p.basePrice)}
-                          </span>
-                        </div>
-                        <div>
-                          <span className="text-slate-400 block text-[10px] font-medium">Harga Jual Shopee</span>
-                          <span className="font-extrabold text-emerald-400 font-mono">
-                            Rp {formatRupiah(p.finalPrice)}
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Stats Pills */}
-                      <div className="flex items-center justify-between text-xs text-slate-400 pt-1 font-medium">
-                        <span>Stok: <strong className="text-slate-200">{p.stock}</strong></span>
-                        <span>Berat: <strong className="text-slate-200">{p.weightGrams} gr</strong></span>
-                        <span>Varian: <strong className="text-slate-200">{p.variations?.[0]?.options?.length || 0}</strong></span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Actions Footer */}
-                  <div className="p-4 bg-[#0B0F19]/60 border-t border-slate-800/80 flex items-center justify-between gap-2">
-                    <div className="flex items-center gap-1.5">
-                      <button
-                        onClick={() => {
-                          setSelectedProduct(p);
-                          setIsEditModalOpen(true);
-                        }}
-                        className="p-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-300 transition-colors border border-slate-700/60"
-                        title="Review & Edit"
-                      >
-                        <Edit3 className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(p.id)}
-                        className="p-2.5 rounded-xl bg-slate-800/80 hover:bg-rose-950/80 text-rose-400 transition-colors border border-slate-700/60"
-                        title="Hapus Produk"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-
-                    <button
-                      onClick={() => handleDownloadExcel(p.id)}
-                      className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-extrabold flex items-center gap-2 shadow-lg shadow-emerald-900/30 transition-all active:scale-95"
-                      title="Download template Shopee Mass Upload khusus produk ini"
-                    >
-                      <FileSpreadsheet className="w-4 h-4 text-emerald-100" />
-                      <span>Export Excel (.xlsx)</span>
-                    </button>
-                  </div>
+          {/* RIGHT STAGING WORKSPACE (8 Columns) */}
+          <div className="lg:col-span-8 space-y-6">
+            
+            {/* Workspace Control Bar */}
+            <div className="glass-panel p-4 rounded-3xl border border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl">
+              <div className="flex items-center gap-3 w-full sm:w-auto">
+                <div className="p-2 rounded-xl bg-blue-500/10 border border-blue-500/20">
+                  <Layers className="w-5 h-5 text-blue-400" />
                 </div>
-              ))}
+                <h2 className="text-base font-bold text-white">Staging Workspace</h2>
+              </div>
+
+              {/* Filter Tabs */}
+              <div className="flex items-center gap-1 bg-[#0B0F19] p-1.5 rounded-2xl border border-slate-800 text-xs w-full sm:w-auto justify-center">
+                <button
+                  onClick={() => setActiveTab('all')}
+                  className={`px-4 py-2 rounded-xl font-bold transition-all ${
+                    activeTab === 'all'
+                      ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md'
+                      : 'text-slate-400 hover:text-slate-200'
+                  }`}
+                >
+                  Semua ({products.length})
+                </button>
+                <button
+                  onClick={() => setActiveTab('ready')}
+                  className={`px-4 py-2 rounded-xl font-bold transition-all ${
+                    activeTab === 'ready'
+                      ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md'
+                      : 'text-slate-400 hover:text-slate-200'
+                  }`}
+                >
+                  Siap ({readyCount})
+                </button>
+                <button
+                  onClick={() => setActiveTab('published')}
+                  className={`px-4 py-2 rounded-xl font-bold transition-all ${
+                    activeTab === 'published'
+                      ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md'
+                      : 'text-slate-400 hover:text-slate-200'
+                  }`}
+                >
+                  Live ({publishedCount})
+                </button>
+              </div>
             </div>
-          )}
+
+            {/* Product Cards Grid */}
+            {filteredProducts.length === 0 ? (
+              <div className="glass-panel border-dashed border-slate-800 rounded-3xl p-16 text-center space-y-4">
+                <div className="w-16 h-16 rounded-2xl bg-slate-800/80 flex items-center justify-center mx-auto text-slate-500">
+                  <ShoppingBag className="w-8 h-8" />
+                </div>
+                <h3 className="text-lg font-bold text-slate-200">Staging Area Kosong</h3>
+                <p className="text-xs text-slate-400 max-w-md mx-auto leading-relaxed">
+                  Masukkan URL katalog JakMall di panel kiri atau tekan contoh demo 1-klik untuk mengekstrak produk ke staging ini.
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {filteredProducts.map((p) => (
+                  <div
+                    key={p.id}
+                    className="glass-card glass-card-hover rounded-3xl overflow-hidden shadow-xl flex flex-col justify-between group border border-slate-800/80"
+                  >
+                    <div>
+                      {/* Image Header & Status */}
+                      <div className="relative aspect-video w-full bg-[#050810] overflow-hidden">
+                        <img
+                          src={p.mainImage}
+                          alt={p.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#070A12] via-transparent to-transparent opacity-90" />
+
+                        <div className="absolute top-3 left-3">
+                          <span
+                            className={`px-3 py-1 rounded-xl text-[11px] font-extrabold backdrop-blur-xl shadow-lg border ${
+                              p.status === 'PUBLISHED'
+                                ? 'bg-emerald-500/80 text-white border-emerald-400/40 shadow-emerald-500/20'
+                                : p.status === 'UPLOADING'
+                                ? 'bg-amber-500/80 text-white border-amber-400/40 shadow-amber-500/20'
+                                : p.status === 'FAILED'
+                                ? 'bg-rose-500/80 text-white border-rose-400/40 shadow-rose-500/20'
+                                : 'bg-blue-500/80 text-white border-blue-400/40 shadow-blue-500/20'
+                            }`}
+                          >
+                            {p.status}
+                          </span>
+                        </div>
+
+                        <div className="absolute bottom-3 right-3 bg-[#0B0F19]/90 backdrop-blur-md px-2.5 py-1 rounded-lg text-[11px] text-slate-300 font-mono border border-slate-700/60 shadow-md">
+                          {p.sku}
+                        </div>
+                      </div>
+
+                      {/* Product Data */}
+                      <div className="p-5 space-y-4">
+                        <h3 className="font-bold text-sm text-white line-clamp-2 leading-snug group-hover:text-blue-300 transition-colors" title={p.title}>
+                          {p.title}
+                        </h3>
+
+                        {/* Price Breakdown */}
+                        <div className="grid grid-cols-2 gap-2 text-xs p-3.5 bg-[#0B0F19]/90 rounded-2xl border border-slate-800">
+                          <div>
+                            <span className="text-slate-400 block text-[10px] font-medium">Harga Modal JakMall</span>
+                            <span className="font-semibold text-slate-300 font-mono">
+                              Rp {formatRupiah(p.basePrice)}
+                            </span>
+                          </div>
+                          <div>
+                            <span className="text-slate-400 block text-[10px] font-medium">Harga Jual Shopee</span>
+                            <span className="font-black text-amber-400 font-mono">
+                              Rp {formatRupiah(p.finalPrice)}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Specs Summary */}
+                        <div className="flex items-center justify-between text-xs text-slate-400 font-medium pt-1">
+                          <span>Stok: <strong className="text-slate-200">{p.stock}</strong></span>
+                          <span>Berat: <strong className="text-slate-200">{p.weightGrams} gr</strong></span>
+                          <span>Varian: <strong className="text-slate-200">{p.variations?.[0]?.options?.length || 0}</strong></span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Actions Footer */}
+                    <div className="p-4 bg-[#0B0F19]/80 border-t border-slate-800/80 flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-1.5">
+                        <button
+                          onClick={() => {
+                            setSelectedProduct(p);
+                            setIsEditModalOpen(true);
+                          }}
+                          className="p-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-300 transition-colors border border-slate-700/60"
+                          title="Review & Edit"
+                        >
+                          <Edit3 className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(p.id)}
+                          className="p-2.5 rounded-xl bg-slate-800/80 hover:bg-rose-950/80 text-rose-400 transition-colors border border-slate-700/60"
+                          title="Hapus Produk"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+
+                      <button
+                        onClick={() => handleDownloadExcel(p.id)}
+                        className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-extrabold flex items-center gap-2 shadow-lg shadow-emerald-900/30 transition-all active:scale-95"
+                        title="Download template Shopee Mass Upload khusus produk ini"
+                      >
+                        <FileSpreadsheet className="w-4 h-4 text-emerald-100" />
+                        <span>Export Excel</span>
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+          </div>
         </section>
 
         {/* Technical Architecture Notes */}
-        <section className="glass-panel rounded-3xl p-6 sm:p-7 space-y-4 shadow-xl">
-          <div className="flex items-center gap-2.5">
-            <div className="p-2 rounded-xl bg-cyan-500/10 border border-cyan-500/20">
-              <Terminal className="w-5 h-5 text-cyan-400" />
+        <section className="glass-panel rounded-3xl p-6 sm:p-7 space-y-4 shadow-2xl border border-slate-800">
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 rounded-2xl bg-blue-500/10 border border-blue-500/20">
+              <Terminal className="w-5 h-5 text-blue-400" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-white">Arsitektur & Ketentuan Teknis Penilaian</h2>
-              <p className="text-xs text-slate-400">Implementasi teknis automation engine & data pipeline</p>
+              <h2 className="text-base font-bold text-white">System Architecture & Engine Overview</h2>
+              <p className="text-xs text-slate-400">Modul teknis Jualin Automation Platform</p>
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs text-slate-300">
-            <div className="p-4 bg-[#0B0F19]/80 rounded-2xl border border-slate-800 space-y-2">
+            <div className="p-4 bg-[#0B0F19]/90 rounded-2xl border border-slate-800 space-y-2">
+              <h4 className="font-bold text-blue-400 flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4" /> Multi-Tier Scraper Engine
+              </h4>
+              <p className="text-slate-400 leading-relaxed">
+                Axios/Cheerio fast JSON-LD parser + Playwright Chromium fallback untuk dynamic Javascript rendering.
+              </p>
+            </div>
+
+            <div className="p-4 bg-[#0B0F19]/90 rounded-2xl border border-slate-800 space-y-2">
+              <h4 className="font-bold text-amber-400 flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4" /> Smart Product Normalizer
+              </h4>
+              <p className="text-slate-400 leading-relaxed">
+                Normalisasi otomatis skema JakMall ke standar Shopee ID 2026: sanitasi judul max 120 char, rumus markup margin, & variasi.
+              </p>
+            </div>
+
+            <div className="p-4 bg-[#0B0F19]/90 rounded-2xl border border-slate-800 space-y-2">
               <h4 className="font-bold text-emerald-400 flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4" /> Multi-Tier Scraper
+                <CheckCircle2 className="w-4 h-4" /> Dual Publishing Pipeline
               </h4>
               <p className="text-slate-400 leading-relaxed">
-                Menggabungkan Fast Axios/Cheerio untuk ekstraksi JSON-LD/OpenGraph + Playwright Chromium fallback untuk rendering dinamis secara 100% gratis.
-              </p>
-            </div>
-
-            <div className="p-4 bg-[#0B0F19]/80 rounded-2xl border border-slate-800 space-y-2">
-              <h4 className="font-bold text-cyan-400 flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4" /> Smart Normalizer
-              </h4>
-              <p className="text-slate-400 leading-relaxed">
-                Memetakan field JakMall ke standar Shopee: markup margin dinamis, sanitasi judul (max 120 char), formatting deskripsi terstruktur, dan penanganan variasi.
-              </p>
-            </div>
-
-            <div className="p-4 bg-[#0B0F19]/80 rounded-2xl border border-slate-800 space-y-2">
-              <h4 className="font-bold text-teal-400 flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4" /> Dual Publishing Engine
-              </h4>
-              <p className="text-slate-400 leading-relaxed">
-                Mendukung eksekusi via Playwright Browser Automation (dengan bukti screenshot logging) serta ekspor template resmi Shopee Mass Upload (.xlsx).
+                Mendukung automasi Playwright browser bot & generator template resmi Shopee Mass Upload (.xlsx).
               </p>
             </div>
           </div>
         </section>
+
       </main>
 
       {/* Edit Product Modal */}
@@ -624,7 +685,7 @@ export default function DashboardPage() {
           <div className="glass-panel border-slate-700/80 w-full max-w-2xl rounded-3xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
             <div className="p-5 border-b border-slate-800 flex items-center justify-between bg-[#0B0F19]/90">
               <div className="flex items-center gap-2.5">
-                <Edit3 className="w-5 h-5 text-emerald-400" />
+                <Edit3 className="w-5 h-5 text-blue-400" />
                 <h3 className="font-bold text-slate-100">Review & Edit Data Produk Shopee</h3>
               </div>
               <button
@@ -644,7 +705,7 @@ export default function DashboardPage() {
                   onChange={(e) =>
                     setSelectedProduct({ ...selectedProduct, title: e.target.value })
                   }
-                  className="w-full px-3.5 py-2.5 bg-[#050810] border border-slate-800 rounded-xl text-slate-100 focus:border-emerald-500 focus:outline-none"
+                  className="w-full px-3.5 py-2.5 bg-[#050810] border border-slate-800 rounded-xl text-slate-100 focus:border-blue-500 focus:outline-none"
                 />
               </div>
 
@@ -660,7 +721,7 @@ export default function DashboardPage() {
                         basePrice: Number(e.target.value),
                       })
                     }
-                    className="w-full px-3.5 py-2.5 bg-[#050810] border border-slate-800 rounded-xl text-slate-100 focus:border-emerald-500 focus:outline-none font-mono"
+                    className="w-full px-3.5 py-2.5 bg-[#050810] border border-slate-800 rounded-xl text-slate-100 focus:border-blue-500 focus:outline-none font-mono"
                   />
                 </div>
                 <div>
@@ -674,7 +735,7 @@ export default function DashboardPage() {
                         finalPrice: Number(e.target.value),
                       })
                     }
-                    className="w-full px-3.5 py-2.5 bg-[#050810] border border-slate-800 rounded-xl text-emerald-400 font-bold focus:border-emerald-500 focus:outline-none font-mono"
+                    className="w-full px-3.5 py-2.5 bg-[#050810] border border-slate-800 rounded-xl text-amber-400 font-bold focus:border-amber-500 focus:outline-none font-mono"
                   />
                 </div>
                 <div>
@@ -688,7 +749,7 @@ export default function DashboardPage() {
                         weightGrams: Number(e.target.value),
                       })
                     }
-                    className="w-full px-3.5 py-2.5 bg-[#050810] border border-slate-800 rounded-xl text-slate-100 focus:border-emerald-500 focus:outline-none font-mono"
+                    className="w-full px-3.5 py-2.5 bg-[#050810] border border-slate-800 rounded-xl text-slate-100 focus:border-blue-500 focus:outline-none font-mono"
                   />
                 </div>
               </div>
@@ -701,7 +762,7 @@ export default function DashboardPage() {
                   onChange={(e) =>
                     setSelectedProduct({ ...selectedProduct, description: e.target.value })
                   }
-                  className="w-full px-3.5 py-2.5 bg-[#050810] border border-slate-800 rounded-xl text-slate-100 focus:border-emerald-500 focus:outline-none font-mono text-[11px] leading-relaxed"
+                  className="w-full px-3.5 py-2.5 bg-[#050810] border border-slate-800 rounded-xl text-slate-100 focus:border-blue-500 focus:outline-none font-mono text-[11px] leading-relaxed"
                 />
               </div>
             </div>
@@ -715,7 +776,7 @@ export default function DashboardPage() {
               </button>
               <button
                 onClick={handleSaveEdit}
-                className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-white text-xs font-bold flex items-center gap-2 shadow-lg shadow-emerald-500/20"
+                className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs font-bold flex items-center gap-2 shadow-lg shadow-blue-500/20"
               >
                 <Check className="w-4 h-4" />
                 <span>Simpan Perubahan</span>
@@ -725,13 +786,13 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {/* Live Automation Execution Log Modal */}
+      {/* Live Execution Log Modal */}
       {isLogModalOpen && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
           <div className="glass-panel border-slate-700/80 w-full max-w-3xl rounded-3xl overflow-hidden shadow-2xl flex flex-col max-h-[85vh]">
             <div className="p-4 border-b border-slate-800 flex items-center justify-between bg-[#0B0F19]/90">
               <div className="flex items-center gap-2.5">
-                <Terminal className="w-5 h-5 text-emerald-400" />
+                <Terminal className="w-5 h-5 text-blue-400" />
                 <h3 className="font-bold text-sm text-slate-100">
                   Shopee Automation Bot — Live Execution Logs
                 </h3>
@@ -745,7 +806,6 @@ export default function DashboardPage() {
             </div>
 
             <div className="p-5 overflow-y-auto space-y-4 flex-1 font-mono text-xs">
-              {/* Terminal Logs Window */}
               <div className="bg-[#050810] p-4 rounded-2xl border border-slate-800 text-slate-300 space-y-1.5 max-h-60 overflow-y-auto shadow-inner">
                 {currentLogs.map((line, idx) => (
                   <div key={idx} className="leading-relaxed">
@@ -753,18 +813,17 @@ export default function DashboardPage() {
                   </div>
                 ))}
                 {isPublishing && (
-                  <div className="flex items-center gap-2 text-emerald-400 pt-2 font-semibold">
+                  <div className="flex items-center gap-2 text-blue-400 pt-2 font-semibold">
                     <RefreshCw className="w-3.5 h-3.5 animate-spin" />
                     <span>Sedang menjalankan automasi browser Playwright...</span>
                   </div>
                 )}
               </div>
 
-              {/* Proof Screenshot Inspector */}
               {currentScreenshot && (
                 <div className="space-y-2 pt-2">
                   <span className="font-bold text-slate-200 flex items-center gap-2 font-sans text-xs">
-                    <ImageIcon className="w-4 h-4 text-emerald-400" /> Bukti Hasil Eksekusi (Proof of Result):
+                    <ImageIcon className="w-4 h-4 text-blue-400" /> Bukti Hasil Eksekusi (Proof of Result):
                   </span>
                   <div className="rounded-2xl overflow-hidden border border-slate-800 bg-[#050810]">
                     <img
@@ -794,12 +853,12 @@ export default function DashboardPage() {
         <div
           className={`fixed bottom-6 right-6 z-50 px-5 py-3.5 rounded-2xl shadow-2xl flex items-center gap-3 text-xs font-bold backdrop-blur-xl border transition-all ${
             toast.type === 'success'
-              ? 'bg-emerald-950/90 text-emerald-200 border-emerald-500/40 shadow-emerald-950/50'
+              ? 'bg-blue-950/90 text-blue-200 border-blue-500/40 shadow-blue-950/50'
               : 'bg-rose-950/90 text-rose-200 border-rose-500/40 shadow-rose-950/50'
           }`}
         >
           {toast.type === 'success' ? (
-            <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+            <CheckCircle2 className="w-5 h-5 text-blue-400" />
           ) : (
             <AlertCircle className="w-5 h-5 text-rose-400" />
           )}
@@ -809,4 +868,5 @@ export default function DashboardPage() {
     </div>
   );
 }
+
 
