@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #0F172A;
-  --foreground: #F8FAFC;
+  --background: #F8FAFC;
+  --foreground: #0F172A;
 }
 
 body {
@@ -18,37 +18,22 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: #0F172A;
+  background: #F1F5F9;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #334155;
+  background: #CBD5E1;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #475569;
+  background: #94A3B8;
 }
 
 /* Custom Range Slider */
 input[type="range"] {
-  accent-color: #2563EB;
+  accent-color: #4F46E5;
 }
 
-/* Clean Card Utility */
-.clean-card {
-  background-color: #1E293B;
-  border: 1px solid #334155;
-  border-radius: 1rem;
-}
-
-.clean-card-hover {
-  transition: all 0.2s ease-in-out;
-}
-
-.clean-card-hover:hover {
-  border-color: #3B82F6;
-  box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.1);
-}
 
 
