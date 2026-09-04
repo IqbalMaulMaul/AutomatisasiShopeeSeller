@@ -122,10 +122,10 @@ export class ShopeeExcelExporter {
         writeCell(r, 0, catId);                                         // Kategori - WAJIB Shopee Category ID
         writeCell(r, 1, product.title.substring(0, 255));               // Nama Produk - WAJIB
         writeCell(r, 2, product.description.substring(0, 3000));        // Deskripsi - WAJIB
-        writeCell(r, 8, product.sku);                                   // SKU Induk
+        writeCell(r, 8, product.sku);                                   // SKU Induk - WAJIB
         writeCell(r, 16, product.finalPrice);                           // Harga - WAJIB number
         writeCell(r, 17, product.stock || 100);                         // Stok - number
-        writeCell(r, 18, product.sku);                                  // Kode Variasi
+        // NOTE: Column 18 (Kode Variasi) MUST BE LEFT EMPTY for single products without variations
         writeCell(r, 22, product.mainImage || '');                      // Foto Sampul - WAJIB
         writeCell(r, 23, product.images[1] || '');                      // Foto Produk 1
         writeCell(r, 24, product.images[2] || '');                      // Foto Produk 2
