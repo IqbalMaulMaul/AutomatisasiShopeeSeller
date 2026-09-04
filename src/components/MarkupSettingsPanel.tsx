@@ -40,20 +40,21 @@ export const MarkupSettingsPanel: React.FC<MarkupSettingsPanelProps> = ({
         </div>
 
         <div className="space-y-4 text-xs">
-          {/* Margin Percent Slider */}
+          {/* Margin Percent Input */}
           <div>
             <div className="flex justify-between text-slate-700 mb-1.5 font-bold">
               <span>Margin Keuntungan (%)</span>
               <span className="text-teal-600 font-mono font-black">{markupPercent}%</span>
             </div>
             <input
-              type="range"
+              type="number"
               min="0"
-              max="100"
-              step="5"
+              max="500"
+              step="1"
               value={markupPercent}
-              onChange={(e) => setMarkupPercent(Number(e.target.value))}
-              className="w-full h-2 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-teal-600"
+              onChange={(e) => setMarkupPercent(Math.max(0, Number(e.target.value)))}
+              placeholder="15"
+              className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 font-mono font-bold focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-600"
             />
           </div>
 
