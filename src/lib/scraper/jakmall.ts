@@ -93,34 +93,41 @@ export class JakmallScraper {
 
     // Prices extraction
     let price = jsonLdPrice;
+
+    // Remove strikethrough / original list prices from DOM clone to extract active discounted price
+    const $priceContainer = $('.dp__price, .product-price, .dp__header__price').clone();
+    $priceContainer.find('.line-through, del, s, .strike, .dp__price--strike, .price-strike, .text-slate-400').remove();
     
-    // Check specific Jakmall main price selectors
-    $('.dp__price, [itemprop="price"], .product-price, .dp__header__price, .price').each((_, el) => {
-      if (!price) {
-        const txt = $(el).attr('content') || $(el).attr('data-price') || $(el).text();
-        const num = parseInt(txt.replace(/[^\d]/g, ''), 10);
-        if (num > 1000 && num !== 5000) {
-          price = num;
+    const priceAreaText = $priceContainer.text() || $('[itemprop="price"]').attr('content') || $('[itemprop="price"]').text();
+    if (priceAreaText) {
+      const matches = priceAreaText.match(/[\d\.,]+/g);
+      if (matches) {
+        const validNumbers = matches
+          .map((m) => parseInt(m.replace(/[^\d]/g, ''), 10))
+          .filter((n) => !isNaN(n) && n > 1000 && n !== 5000);
+        if (validNumbers.length > 0) {
+          // Discounted selling price is the active/lower price
+          price = Math.min(...validNumbers);
         }
       }
-    });
+    }
 
     if (!price) {
-      // Look for Rp matches, avoiding lines with "Dropship"
+      // Look for Rp matches in body text, avoiding lines with "Dropship"
       const bodyText = $('body').text();
       const rpRegex = /Rp\s*([\d\.,]+)/gi;
+      const foundPrices: number[] = [];
       let match: RegExpExecArray | null;
       while ((match = rpRegex.exec(bodyText)) !== null) {
         const val = parseInt(match[1].replace(/[^\d]/g, ''), 10);
-        if (val > 1000 && val !== 5000) {
-          price = val;
-          break;
+        if (val > 1000 && val !== 5000 && val !== 65900) {
+          foundPrices.push(val);
         }
       }
-      if (!price) {
-        const anyRp = bodyText.match(/Rp\s*([\d\.,]+)/i);
-        if (anyRp) price = parseInt(anyRp[1].replace(/[^\d]/g, ''), 10) || 37300;
-        else price = 37300;
+      if (foundPrices.length > 0) {
+        price = Math.min(...foundPrices);
+      } else {
+        price = 37300;
       }
     }
 

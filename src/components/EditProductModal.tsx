@@ -54,9 +54,13 @@ export const EditProductModal: React.FC<EditProductModalProps> = ({
               <input
                 type="number"
                 value={product.basePrice}
-                onChange={(e) =>
-                  setProduct({ ...product, basePrice: Number(e.target.value) })
-                }
+                onChange={(e) => {
+                  const newBase = Number(e.target.value);
+                  const markup = product.markupPercent ?? 15;
+                  const fixed = product.fixedMargin ?? 2500;
+                  const newFinal = Math.round((newBase * (1 + markup / 100) + fixed) / 100) * 100;
+                  setProduct({ ...product, basePrice: newBase, finalPrice: newFinal });
+                }}
                 className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 font-mono font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600"
               />
             </div>
