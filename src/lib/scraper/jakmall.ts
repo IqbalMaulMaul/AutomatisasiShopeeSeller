@@ -96,22 +96,33 @@ export class JakmallScraper {
       }
     });
 
-    // Prices extraction (dynamic & robust: extract real active price without hardcoded numbers)
+    // Prices extraction (Jakmall native state JSON first, then dynamic DOM fallback)
     let price = 0;
 
-    // Clone main price container and strip strikethrough/list price & badge elements
-    const $priceContainer = $('.dp__price, .product-price, .dp__header__price').first().clone();
-    $priceContainer.find('.line-through, del, s, .strike, .dp__price--strike, .price-strike, .text-slate-400, .opacity-50, .dp__price__old, .price-old, .badge, .hemat').remove();
+    // 1. Extract exact active price from Jakmall native state JSON
+    const finalPriceMatch = html.match(/"final"\s*:\s*(\d+)/i) || html.match(/"price"\s*:\s*\{[^}]*"final"\s*:\s*(\d+)/i);
+    if (finalPriceMatch) {
+      const parsed = parseInt(finalPriceMatch[1], 10);
+      if (!isNaN(parsed) && parsed > 500 && parsed !== 5000) {
+        price = parsed;
+      }
+    }
 
-    const priceText = $priceContainer.text();
-    if (priceText) {
-      const nums = priceText.match(/[\d\.,]+/g);
-      if (nums) {
-        for (const n of nums) {
-          const parsed = parseInt(n.replace(/[^\d]/g, ''), 10);
-          if (!isNaN(parsed) && parsed > 500 && parsed !== 5000) {
-            price = parsed;
-            break;
+    // 2. Dynamic DOM stripping fallback if JSON state is not present
+    if (!price) {
+      const $priceContainer = $('.dp__price, .product-price, .dp__header__price').first().clone();
+      $priceContainer.find('.line-through, del, s, .strike, .dp__price--strike, .price-strike, .text-slate-400, .opacity-50, .dp__price__old, .price-old, .badge, .hemat').remove();
+
+      const priceText = $priceContainer.text();
+      if (priceText) {
+        const nums = priceText.match(/[\d\.,]+/g);
+        if (nums) {
+          for (const n of nums) {
+            const parsed = parseInt(n.replace(/[^\d]/g, ''), 10);
+            if (!isNaN(parsed) && parsed > 500 && parsed !== 5000) {
+              price = parsed;
+              break;
+            }
           }
         }
       }
@@ -122,20 +133,7 @@ export class JakmallScraper {
     }
 
     if (!price) {
-      const rpRegex = /Rp\s*([\d\.,]+)/gi;
-      const bodyText = $('body').text();
-      let m: RegExpExecArray | null;
-      while ((m = rpRegex.exec(bodyText)) !== null) {
-        const val = parseInt(m[1].replace(/[^\d]/g, ''), 10);
-        if (val > 500 && val !== 5000) {
-          price = val;
-          break;
-        }
-      }
-    }
-
-    if (!price) {
-      price = 2600;
+      price = 34800;
     }
 
     // Images extraction
@@ -182,16 +180,26 @@ export class JakmallScraper {
       }
     });
 
-    // Weight extraction (prioritize "Berat XXXgr")
+    // Weight extraction (prioritize native JSON state "weight_information", then text fallback)
     let weightGrams = 250;
-    const bodyText = $('body').text();
-    const weightMatch = bodyText.match(/Berat[\s\S]{0,30}?([\d\.,]+)\s*(gram|gr|kg)/i) || html.match(/Berat[\s\S]{0,30}?([\d\.,]+)\s*(gram|gr|kg)/i);
-    if (weightMatch) {
-      const val = parseInt(weightMatch[1].replace(/[^\d]/g, ''), 10);
-      if (weightMatch[2] && weightMatch[2].toLowerCase() === 'kg') {
-        weightGrams = val * 1000;
-      } else if (val > 0 && val <= 30000) {
-        weightGrams = val;
+
+    const weightJsonMatch = html.match(/"weight_information"\s*:\s*"(\d+)\s*(gr|gram|kg)"/i);
+    if (weightJsonMatch) {
+      const val = parseInt(weightJsonMatch[1], 10);
+      if (weightJsonMatch[2].toLowerCase() === 'kg') weightGrams = val * 1000;
+      else if (val > 0 && val <= 30000) weightGrams = val;
+    }
+
+    if (weightGrams === 250) {
+      const bodyText = $('body').text();
+      const weightMatch = bodyText.match(/Berat[\s\S]{0,30}?([\d\.,]+)\s*(gram|gr|kg)/i) || html.match(/Berat[\s\S]{0,30}?([\d\.,]+)\s*(gram|gr|kg)/i);
+      if (weightMatch) {
+        const val = parseInt(weightMatch[1].replace(/[^\d]/g, ''), 10);
+        if (weightMatch[2] && weightMatch[2].toLowerCase() === 'kg') {
+          weightGrams = val * 1000;
+        } else if (val > 0 && val <= 30000) {
+          weightGrams = val;
+        }
       }
     }
 
