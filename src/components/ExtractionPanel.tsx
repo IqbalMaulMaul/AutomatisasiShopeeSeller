@@ -21,7 +21,7 @@ export const ExtractionPanel: React.FC<ExtractionPanelProps> = ({
   isScraping,
 }) => {
   return (
-    <div className="bg-white border border-slate-200/90 rounded-2xl p-6 shadow-sm flex flex-col justify-between space-y-4">
+    <div className="bg-white border border-slate-200/90 rounded-2xl p-6 shadow-sm flex flex-col justify-center space-y-4 h-full w-full">
       <div className="space-y-4">
         {/* Title */}
         <div className="flex items-center gap-3">
