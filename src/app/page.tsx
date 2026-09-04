@@ -136,7 +136,7 @@ export default function DashboardPage() {
       case 'history':
         return 'Riwayat Ekstraksi';
       default:
-        return 'Jualin ➔ Shopee Automation Hub';
+        return 'Jualin App | Katalog & Automatisasi Shopee';
     }
   };
 
