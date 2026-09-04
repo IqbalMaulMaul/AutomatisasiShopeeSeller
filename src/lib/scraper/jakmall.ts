@@ -96,23 +96,34 @@ export class JakmallScraper {
       }
     });
 
-    // Prices extraction (prioritize main displayed price, e.g. 35.600)
+    // Prices extraction (specifically target active displayed red price, e.g. 28.700)
     let price = 0;
 
-    // Clone price container and remove strikethrough list prices
-    const $priceContainer = $('.dp__price, .product-price, .dp__header__price').first().clone();
-    $priceContainer.find('.line-through, del, s, .strike, .dp__price--strike, .price-strike, .text-slate-400').remove();
-    
-    const mainPriceText = $priceContainer.text() || $('[itemprop="price"]').attr('content') || $('[itemprop="price"]').text();
-    if (mainPriceText) {
-      const matches = mainPriceText.match(/[\d\.,]+/g);
-      if (matches) {
-        const validNumbers = matches
-          .map((m) => parseInt(m.replace(/[^\d]/g, ''), 10))
-          .filter((n) => !isNaN(n) && n > 1000 && n !== 5000);
-        if (validNumbers.length > 0) {
-          // Discounted active selling price is always the minimum of the list prices
-          price = Math.min(...validNumbers);
+    // 1. Try specific active price selectors first
+    const $activePriceEl = $('.dp__price .price, .dp__price__final, [itemprop="price"], .dp__price span.price').first();
+    if ($activePriceEl.length > 0) {
+      const txt = $activePriceEl.attr('content') || $activePriceEl.attr('data-price') || $activePriceEl.text();
+      const num = parseInt(txt.replace(/[^\d]/g, ''), 10);
+      if (num > 1000 && num !== 5000) {
+        price = num;
+      }
+    }
+
+    // 2. Clone main price container and strip original list/strikethrough & member price elements
+    if (!price) {
+      const $priceContainer = $('.dp__price, .product-price, .dp__header__price').first().clone();
+      $priceContainer.find('.line-through, del, s, .strike, .dp__price--strike, .price-strike, .text-slate-400, .opacity-50, .affiliate-price, .member-price').remove();
+      
+      const mainPriceText = $priceContainer.text() || $('[itemprop="price"]').attr('content') || $('[itemprop="price"]').text();
+      if (mainPriceText) {
+        const matches = mainPriceText.match(/[\d\.,]+/g);
+        if (matches) {
+          const validNumbers = matches
+            .map((m) => parseInt(m.replace(/[^\d]/g, ''), 10))
+            .filter((n) => !isNaN(n) && n > 1000 && n !== 5000);
+          if (validNumbers.length > 0) {
+            price = validNumbers[0];
+          }
         }
       }
     }
