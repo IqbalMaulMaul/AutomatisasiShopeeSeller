@@ -18,7 +18,7 @@ interface ExtractionPanelProps {
   setUrlInput: (val: string) => void;
   onScrape: (e?: React.FormEvent) => void;
   isScraping: boolean;
-  sampleUrls: SampleUrl[];
+  sampleUrls?: SampleUrl[];
 }
 
 export const ExtractionPanel: React.FC<ExtractionPanelProps> = ({
@@ -26,7 +26,6 @@ export const ExtractionPanel: React.FC<ExtractionPanelProps> = ({
   setUrlInput,
   onScrape,
   isScraping,
-  sampleUrls,
 }) => {
   return (
     <div className="bg-white border border-slate-200/90 rounded-2xl p-6 shadow-sm flex flex-col justify-between space-y-6">
@@ -75,32 +74,6 @@ export const ExtractionPanel: React.FC<ExtractionPanelProps> = ({
             )}
           </button>
         </form>
-
-        {/* Preset Product Cards (Matching Reference Mockup) */}
-        <div className="space-y-2 pt-2">
-          <span className="text-xs text-slate-500 font-bold block">Contoh Demo:</span>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            {sampleUrls.map((s, idx) => (
-              <button
-                key={idx}
-                type="button"
-                onClick={() => setUrlInput(s.url)}
-                className="flex items-center gap-3 p-2.5 rounded-xl bg-slate-50 border border-slate-200 hover:border-indigo-300 hover:bg-indigo-50/50 transition-all text-left group"
-              >
-                <div className="w-10 h-10 rounded-lg bg-white border border-slate-200 overflow-hidden shrink-0 flex items-center justify-center p-1">
-                  <img
-                    src={s.image || 'https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=100&auto=format&fit=crop&q=60'}
-                    alt={s.name}
-                    className="w-full h-full object-contain"
-                  />
-                </div>
-                <span className="text-xs font-semibold text-slate-700 group-hover:text-indigo-600 line-clamp-2 leading-tight">
-                  {s.name}
-                </span>
-              </button>
-            ))}
-          </div>
-        </div>
       </div>
     </div>
   );
