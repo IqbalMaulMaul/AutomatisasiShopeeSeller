@@ -8,6 +8,7 @@ import { MarkupSettingsPanel } from '@/components/MarkupSettingsPanel';
 import { StagingArea } from '@/components/StagingArea';
 import { ExtractionHistory } from '@/components/ExtractionHistory';
 import { EditProductModal } from '@/components/EditProductModal';
+import { ConfirmModal } from '@/components/ConfirmModal';
 import { Toast } from '@/components/Toast';
 import { ShopeeProductMapping } from '@/types/product';
 
@@ -23,6 +24,7 @@ export default function DashboardPage() {
   const [products, setProducts] = useState<ShopeeProductMapping[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<ShopeeProductMapping | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
   const sampleUrls = [
@@ -105,14 +107,20 @@ export default function DashboardPage() {
     showToast('File template Shopee Mass Upload sedang diunduh.');
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('Hapus produk ini dari daftar staging?')) return;
+  const onRequestDelete = (id: string) => {
+    setDeleteTargetId(id);
+  };
+
+  const executeDelete = async () => {
+    if (!deleteTargetId) return;
     try {
-      await fetch(`/api/products/${id}`, { method: 'DELETE' });
-      showToast('Produk dihapus.');
+      await fetch(`/api/products/${deleteTargetId}`, { method: 'DELETE' });
+      showToast('Produk berhasil dihapus dari staging.');
       fetchProducts();
     } catch (err) {
-      console.error(err);
+      showToast('Gagal menghapus produk.', 'error');
+    } finally {
+      setDeleteTargetId(null);
     }
   };
 
@@ -193,7 +201,7 @@ export default function DashboardPage() {
                   setSelectedProduct(p);
                   setIsEditModalOpen(true);
                 }}
-                onDelete={handleDelete}
+                onDelete={onRequestDelete}
                 onDownloadExcel={handleDownloadExcel}
               />
             </>
@@ -228,7 +236,7 @@ export default function DashboardPage() {
                 setSelectedProduct(p);
                 setIsEditModalOpen(true);
               }}
-              onDelete={handleDelete}
+              onDelete={onRequestDelete}
               onDownloadExcel={handleDownloadExcel}
             />
           )}
@@ -252,6 +260,17 @@ export default function DashboardPage() {
         product={selectedProduct}
         setProduct={setSelectedProduct}
         onSave={handleSaveEdit}
+      />
+
+      <ConfirmModal
+        isOpen={!!deleteTargetId}
+        title="Hapus Produk Staging?"
+        message="Apakah Anda yakin ingin menghapus produk ini dari daftar staging? Produk yang dihapus tidak akan dapat di-export ke Shopee."
+        confirmText="Ya, Hapus Produk"
+        cancelText="Batal"
+        type="danger"
+        onConfirm={executeDelete}
+        onCancel={() => setDeleteTargetId(null)}
       />
 
       <Toast toast={toast} />
