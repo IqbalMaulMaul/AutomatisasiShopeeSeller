@@ -27,23 +27,7 @@ export default function DashboardPage() {
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
-  const sampleUrls = [
-    {
-      name: 'TWS Bluetooth Earphone V5.3',
-      url: 'https://www.jakmall.com/tws-audio/tws-bluetooth-53-wireless-earphone-waterproof',
-      image: 'https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=100&auto=format&fit=crop&q=60',
-    },
-    {
-      name: 'Smartwatch IP68 Heart Rate',
-      url: 'https://www.jakmall.com/wearables/smartwatch-fitness-tracker-ip68-waterproof',
-      image: 'https://images.unsplash.com/photo-1579586337278-3befd40fd17a?w=100&auto=format&fit=crop&q=60',
-    },
-    {
-      name: 'Fast Charging Cable Type-C 65W',
-      url: 'https://www.jakmall.com/gadget-acc/kabel-data-type-c-to-type-c-65w-braided',
-      image: 'https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=100&auto=format&fit=crop&q=60',
-    },
-  ];
+
 
   const showToast = (message: string, type: 'success' | 'error' = 'success') => {
     setToast({ message, type });
@@ -175,17 +159,16 @@ export default function DashboardPage() {
         <main className="flex-1 p-6 max-w-7xl w-full mx-auto space-y-6 overflow-y-auto">
           {activeSidebarTab === 'dashboard' && (
             <>
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                <div className="lg:col-span-7">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+                <div className="lg:col-span-7 flex">
                   <ExtractionPanel
                     urlInput={urlInput}
                     setUrlInput={setUrlInput}
                     onScrape={handleScrape}
                     isScraping={isScraping}
-                    sampleUrls={sampleUrls}
                   />
                 </div>
-                <div className="lg:col-span-5">
+                <div className="lg:col-span-5 flex">
                   <MarkupSettingsPanel
                     markupPercent={markupPercent}
                     setMarkupPercent={setMarkupPercent}
@@ -208,17 +191,16 @@ export default function DashboardPage() {
           )}
 
           {activeSidebarTab === 'extract' && (
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-              <div className="lg:col-span-7">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+              <div className="lg:col-span-7 flex">
                 <ExtractionPanel
                   urlInput={urlInput}
                   setUrlInput={setUrlInput}
                   onScrape={handleScrape}
                   isScraping={isScraping}
-                  sampleUrls={sampleUrls}
                 />
               </div>
-              <div className="lg:col-span-5">
+              <div className="lg:col-span-5 flex">
                 <MarkupSettingsPanel
                   markupPercent={markupPercent}
                   setMarkupPercent={setMarkupPercent}

@@ -5,6 +5,8 @@ import {
   Link as LinkIcon,
   ArrowRight,
   RefreshCw,
+  CheckCircle2,
+  Zap,
 } from 'lucide-react';
 
 interface SampleUrl {
@@ -28,7 +30,7 @@ export const ExtractionPanel: React.FC<ExtractionPanelProps> = ({
   isScraping,
 }) => {
   return (
-    <div className="bg-white border border-slate-200/90 rounded-2xl p-6 shadow-sm flex flex-col justify-between space-y-6">
+    <div className="bg-white border border-slate-200/90 rounded-2xl p-6 shadow-sm flex flex-col justify-between space-y-5 h-full w-full">
       <div className="space-y-4">
         {/* Title */}
         <div className="flex items-center gap-3">
@@ -74,6 +76,19 @@ export const ExtractionPanel: React.FC<ExtractionPanelProps> = ({
             )}
           </button>
         </form>
+      </div>
+
+      {/* Feature Badges for Height Balance */}
+      <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-slate-100 text-[11px]">
+        <span className="px-2.5 py-1 rounded-lg bg-indigo-50 text-indigo-700 font-semibold flex items-center gap-1.5 border border-indigo-100">
+          <Zap className="w-3.5 h-3.5 text-indigo-600" /> Fast HTML Scraper
+        </span>
+        <span className="px-2.5 py-1 rounded-lg bg-indigo-50 text-indigo-700 font-semibold flex items-center gap-1.5 border border-indigo-100">
+          <CheckCircle2 className="w-3.5 h-3.5 text-indigo-600" /> Multi-Varian Ready
+        </span>
+        <span className="px-2.5 py-1 rounded-lg bg-indigo-50 text-indigo-700 font-semibold flex items-center gap-1.5 border border-indigo-100">
+          <CheckCircle2 className="w-3.5 h-3.5 text-indigo-600" /> Mass Upload Excel Compliance
+        </span>
       </div>
     </div>
   );
