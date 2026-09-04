@@ -1,12 +1,15 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   LayoutDashboard,
   Sparkles,
   Layers,
   History,
   Store,
+  Pencil,
+  Check,
+  X,
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -27,6 +30,38 @@ export const Sidebar: React.FC<SidebarProps> = ({
   setActiveTab,
   productCount,
 }) => {
+  const [storeName, setStoreName] = useState<string>('IqbalMaulMaul');
+  const [isEditing, setIsEditing] = useState(false);
+  const [tempName, setTempName] = useState('');
+
+  useEffect(() => {
+    const savedStore = localStorage.getItem('shopee_store_name');
+    if (savedStore) {
+      setStoreName(savedStore);
+    } else if (process.env.NEXT_PUBLIC_SHOPEE_STORE_NAME) {
+      setStoreName(process.env.NEXT_PUBLIC_SHOPEE_STORE_NAME);
+    }
+  }, []);
+
+  const handleStartEdit = () => {
+    setTempName(storeName);
+    setIsEditing(true);
+  };
+
+  const handleSaveStore = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    const trimmed = tempName.trim();
+    if (trimmed) {
+      setStoreName(trimmed);
+      localStorage.setItem('shopee_store_name', trimmed);
+    }
+    setIsEditing(false);
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditing(false);
+  };
+
   const menuItems: MenuItem[] = [
     {
       id: 'dashboard',
@@ -105,18 +140,60 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
       {/* Connected Store Badge at Sidebar Bottom */}
       <div className="p-3.5 rounded-2xl bg-gradient-to-r from-indigo-600 to-blue-600 text-white space-y-2 shadow-md">
-        <div className="flex items-center gap-2.5">
-          <div className="p-2 rounded-xl bg-white/20 backdrop-blur-md text-white">
-            <Store className="w-4 h-4" />
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div className="p-2 rounded-xl bg-white/20 backdrop-blur-md text-white shrink-0">
+              <Store className="w-4 h-4" />
+            </div>
+            <div className="overflow-hidden min-w-0">
+              <span className="text-[10px] text-indigo-100 font-semibold block uppercase tracking-wider">
+                Toko Terhubung
+              </span>
+              {isEditing ? (
+                <form onSubmit={handleSaveStore} className="flex items-center gap-1 mt-0.5">
+                  <input
+                    type="text"
+                    value={tempName}
+                    onChange={(e) => setTempName(e.target.value)}
+                    className="w-full bg-white text-slate-900 text-xs px-2 py-0.5 rounded font-medium focus:outline-none"
+                    placeholder="Nama Toko"
+                    autoFocus
+                  />
+                  <button
+                    type="submit"
+                    className="p-1 hover:bg-white/20 rounded text-emerald-300 transition-colors"
+                    title="Simpan"
+                  >
+                    <Check className="w-3.5 h-3.5" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleCancelEdit}
+                    className="p-1 hover:bg-white/20 rounded text-rose-300 transition-colors"
+                    title="Batal"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </form>
+              ) : (
+                <h4 className="text-xs font-bold text-white truncate" title={`Shopee: ${storeName}`}>
+                  Shopee: {storeName}
+                </h4>
+              )}
+            </div>
           </div>
-          <div className="overflow-hidden">
-            <span className="text-[10px] text-indigo-100 font-semibold block uppercase tracking-wider">
-              Toko Terhubung
-            </span>
-            <h4 className="text-xs font-bold text-white truncate">Shopee: IqbalMaulMaul</h4>
-          </div>
+          {!isEditing && (
+            <button
+              onClick={handleStartEdit}
+              className="p-1.5 hover:bg-white/20 rounded-lg text-indigo-100 hover:text-white transition-colors shrink-0"
+              title="Ubah Nama Toko"
+            >
+              <Pencil className="w-3.5 h-3.5" />
+            </button>
+          )}
         </div>
-        <div className="flex items-center justify-end pt-1 border-t border-white/20 text-[10px]">
+        <div className="flex items-center justify-between pt-1 border-t border-white/20 text-[10px]">
+          <span className="text-indigo-100 text-[10px]">Status Portal</span>
           <span className="px-2 py-0.5 rounded-full bg-emerald-400/20 text-white font-bold border border-emerald-300/30">
             ● Aktif
           </span>
