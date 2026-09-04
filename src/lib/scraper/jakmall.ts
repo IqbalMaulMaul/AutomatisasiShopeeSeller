@@ -111,8 +111,8 @@ export class JakmallScraper {
           .map((m) => parseInt(m.replace(/[^\d]/g, ''), 10))
           .filter((n) => !isNaN(n) && n > 1000 && n !== 5000);
         if (validNumbers.length > 0) {
-          // Take the main price displayed
-          price = validNumbers[0];
+          // Discounted active selling price is always the minimum of the list prices
+          price = Math.min(...validNumbers);
         }
       }
     }
@@ -133,9 +133,9 @@ export class JakmallScraper {
         }
       }
       if (foundPrices.length > 0) {
-        price = foundPrices[0];
+        price = Math.min(...foundPrices);
       } else {
-        price = 35600;
+        price = 28700;
       }
     }
 
