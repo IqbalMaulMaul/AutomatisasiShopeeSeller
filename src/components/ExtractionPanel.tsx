@@ -5,6 +5,9 @@ import {
   Link as LinkIcon,
   ArrowRight,
   RefreshCw,
+  Zap,
+  Layers,
+  FileSpreadsheet,
 } from 'lucide-react';
 
 interface ExtractionPanelProps {
@@ -21,7 +24,7 @@ export const ExtractionPanel: React.FC<ExtractionPanelProps> = ({
   isScraping,
 }) => {
   return (
-    <div className="bg-white border border-slate-200/90 rounded-2xl p-6 shadow-sm flex flex-col justify-center space-y-4 h-full w-full">
+    <div className="bg-white border border-slate-200/90 rounded-2xl p-6 shadow-sm flex flex-col justify-between space-y-4 h-full w-full">
       <div className="space-y-4">
         {/* Title */}
         <div className="flex items-center gap-3">
@@ -67,6 +70,22 @@ export const ExtractionPanel: React.FC<ExtractionPanelProps> = ({
             )}
           </button>
         </form>
+      </div>
+
+      {/* Elegant Indonesian Feature Redaksi Badges */}
+      <div className="flex flex-wrap items-center gap-2 pt-3 border-t border-slate-100">
+        <div className="px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200/80 hover:border-indigo-200 hover:bg-indigo-50/50 hover:text-indigo-700 text-slate-600 font-semibold text-[11px] transition-all duration-200 flex items-center gap-2 cursor-default group hover:-translate-y-0.5">
+          <Zap className="w-3.5 h-3.5 text-indigo-500 group-hover:text-indigo-600 transition-colors" />
+          <span>Ekstraksi Cepat & Realtime</span>
+        </div>
+        <div className="px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200/80 hover:border-indigo-200 hover:bg-indigo-50/50 hover:text-indigo-700 text-slate-600 font-semibold text-[11px] transition-all duration-200 flex items-center gap-2 cursor-default group hover:-translate-y-0.5">
+          <Layers className="w-3.5 h-3.5 text-indigo-500 group-hover:text-indigo-600 transition-colors" />
+          <span>Dukungan Varian Produk</span>
+        </div>
+        <div className="px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200/80 hover:border-indigo-200 hover:bg-indigo-50/50 hover:text-indigo-700 text-slate-600 font-semibold text-[11px] transition-all duration-200 flex items-center gap-2 cursor-default group hover:-translate-y-0.5">
+          <FileSpreadsheet className="w-3.5 h-3.5 text-indigo-500 group-hover:text-indigo-600 transition-colors" />
+          <span>Kompatibel Shopee Mass Upload</span>
+        </div>
       </div>
     </div>
   );
