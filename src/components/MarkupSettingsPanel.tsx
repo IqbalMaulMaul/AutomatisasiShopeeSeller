@@ -8,8 +8,6 @@ interface MarkupSettingsPanelProps {
   setMarkupPercent: (val: number) => void;
   fixedMargin: number;
   setFixedMargin: (val: number) => void;
-  showBrowserWindow: boolean;
-  setShowBrowserWindow: (val: boolean) => void;
 }
 
 function formatRupiah(amount: number): string {
@@ -22,8 +20,6 @@ export const MarkupSettingsPanel: React.FC<MarkupSettingsPanelProps> = ({
   setMarkupPercent,
   fixedMargin,
   setFixedMargin,
-  showBrowserWindow,
-  setShowBrowserWindow,
 }) => {
   return (
     <div className="bg-white border border-slate-200/90 rounded-2xl p-6 shadow-sm flex flex-col justify-between space-y-5">

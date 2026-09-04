@@ -19,7 +19,6 @@ interface ProductCardProps {
   onEdit: (product: ShopeeProductMapping) => void;
   onDelete: (id: string) => void;
   onDownloadExcel: (id: string) => void;
-  onPublishBot: (product: ShopeeProductMapping) => void;
 }
 
 function formatRupiah(amount: number): string {
@@ -32,7 +31,6 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   onEdit,
   onDelete,
   onDownloadExcel,
-  onPublishBot,
 }) => {
   const profitAmount = product.finalPrice - product.basePrice;
   const profitMarginPercent = product.basePrice > 0
@@ -137,15 +135,6 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           >
             <Eye className="w-3.5 h-3.5" />
             <span>Lihat Detail</span>
-          </button>
-
-          <button
-            onClick={() => onPublishBot(product)}
-            className="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm shadow-indigo-600/20 active:scale-95"
-            title="Jalankan Bot Automasi Shopee"
-          >
-            <Bot className="w-3.5 h-3.5" />
-            <span>Siap Upload</span>
           </button>
 
           <button

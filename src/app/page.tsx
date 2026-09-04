@@ -8,9 +8,8 @@ import { MarkupSettingsPanel } from '@/components/MarkupSettingsPanel';
 import { StagingArea } from '@/components/StagingArea';
 import { ExtractionHistory } from '@/components/ExtractionHistory';
 import { EditProductModal } from '@/components/EditProductModal';
-import { ExecutionLogModal } from '@/components/ExecutionLogModal';
 import { Toast } from '@/components/Toast';
-import { ShopeeProductMapping, PublishResult } from '@/types/product';
+import { ShopeeProductMapping } from '@/types/product';
 
 export default function DashboardPage() {
   const [activeSidebarTab, setActiveSidebarTab] = useState<
@@ -24,11 +23,6 @@ export default function DashboardPage() {
   const [products, setProducts] = useState<ShopeeProductMapping[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<ShopeeProductMapping | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [isLogModalOpen, setIsLogModalOpen] = useState(false);
-  const [currentLogs, setCurrentLogs] = useState<string[]>([]);
-  const [currentScreenshot, setCurrentScreenshot] = useState<string | null>(null);
-  const [isPublishing, setIsPublishing] = useState(false);
-  const [showBrowserWindow, setShowBrowserWindow] = useState(true);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
   const sampleUrls = [
@@ -102,42 +96,6 @@ export default function DashboardPage() {
       showToast(error.message || 'Terjadi kesalahan jaringan.', 'error');
     } finally {
       setIsScraping(false);
-    }
-  };
-
-  const handlePublishBot = async (product: ShopeeProductMapping) => {
-    setIsPublishing(true);
-    setCurrentLogs([`[${new Date().toLocaleTimeString()}] Memulai inisialisasi Playwright Bot...`]);
-    setCurrentScreenshot(null);
-    setIsLogModalOpen(true);
-
-    try {
-      const res = await fetch('/api/publish', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          productId: product.id,
-          method: 'PLAYWRIGHT_BOT',
-          headless: !showBrowserWindow,
-        }),
-      });
-
-      const data: PublishResult = await res.json();
-      if (data.success) {
-        setCurrentLogs(data.logs || []);
-        if (data.screenshotUrl) setCurrentScreenshot(data.screenshotUrl);
-        showToast('Berhasil memproses listing via Shopee Bot!');
-        fetchProducts();
-      } else {
-        setCurrentLogs(data.logs || [data.message || 'Terjadi kegagalan']);
-        showToast(data.message || 'Gagal menjalankan bot automasi.', 'error');
-      }
-    } catch (err: unknown) {
-      const error = err as Error;
-      setCurrentLogs((prev) => [...prev, `[ERROR] ${error.message}`]);
-      showToast('Gagal menghubungi service automation.', 'error');
-    } finally {
-      setIsPublishing(false);
     }
   };
 
@@ -225,8 +183,6 @@ export default function DashboardPage() {
                     setMarkupPercent={setMarkupPercent}
                     fixedMargin={fixedMargin}
                     setFixedMargin={setFixedMargin}
-                    showBrowserWindow={showBrowserWindow}
-                    setShowBrowserWindow={setShowBrowserWindow}
                   />
                 </div>
               </div>
@@ -239,7 +195,6 @@ export default function DashboardPage() {
                 }}
                 onDelete={handleDelete}
                 onDownloadExcel={handleDownloadExcel}
-                onPublishBot={handlePublishBot}
               />
             </>
           )}
@@ -261,8 +216,6 @@ export default function DashboardPage() {
                   setMarkupPercent={setMarkupPercent}
                   fixedMargin={fixedMargin}
                   setFixedMargin={setFixedMargin}
-                  showBrowserWindow={showBrowserWindow}
-                  setShowBrowserWindow={setShowBrowserWindow}
                 />
               </div>
             </div>
@@ -277,7 +230,6 @@ export default function DashboardPage() {
               }}
               onDelete={handleDelete}
               onDownloadExcel={handleDownloadExcel}
-              onPublishBot={handlePublishBot}
             />
           )}
 
@@ -285,7 +237,6 @@ export default function DashboardPage() {
             <ExtractionHistory
               products={products}
               onDownloadExcel={handleDownloadExcel}
-              onPublishBot={handlePublishBot}
             />
           )}
         </main>
@@ -301,14 +252,6 @@ export default function DashboardPage() {
         product={selectedProduct}
         setProduct={setSelectedProduct}
         onSave={handleSaveEdit}
-      />
-
-      <ExecutionLogModal
-        isOpen={isLogModalOpen}
-        onClose={() => setIsLogModalOpen(false)}
-        logs={currentLogs}
-        isPublishing={isPublishing}
-        screenshotUrl={currentScreenshot}
       />
 
       <Toast toast={toast} />

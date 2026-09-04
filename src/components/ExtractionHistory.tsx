@@ -7,7 +7,6 @@ import { ShopeeProductMapping } from '@/types/product';
 interface ExtractionHistoryProps {
   products: ShopeeProductMapping[];
   onDownloadExcel: (id: string) => void;
-  onPublishBot: (product: ShopeeProductMapping) => void;
 }
 
 function formatRupiah(amount: number): string {
@@ -18,7 +17,6 @@ function formatRupiah(amount: number): string {
 export const ExtractionHistory: React.FC<ExtractionHistoryProps> = ({
   products,
   onDownloadExcel,
-  onPublishBot,
 }) => {
   return (
     <div className="bg-white border border-slate-200/90 rounded-2xl p-6 shadow-sm space-y-6">
@@ -97,18 +95,11 @@ export const ExtractionHistory: React.FC<ExtractionHistoryProps> = ({
                   </td>
                   <td className="px-4 py-3.5 text-right space-x-2">
                     <button
-                      onClick={() => onPublishBot(p)}
-                      className="px-2.5 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-[11px]"
-                      title="Jalankan Bot Automasi"
-                    >
-                      Bot Upload
-                    </button>
-                    <button
                       onClick={() => onDownloadExcel(p.id)}
-                      className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-[11px] border border-slate-200"
-                      title="Export Excel"
+                      className="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] shadow-sm"
+                      title="Export Excel Mass Upload Shopee"
                     >
-                      Excel
+                      Export Excel
                     </button>
                   </td>
                 </tr>

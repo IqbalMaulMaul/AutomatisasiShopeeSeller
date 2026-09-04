@@ -10,7 +10,6 @@ interface StagingAreaProps {
   onEdit: (product: ShopeeProductMapping) => void;
   onDelete: (id: string) => void;
   onDownloadExcel: (id: string) => void;
-  onPublishBot: (product: ShopeeProductMapping) => void;
 }
 
 export const StagingArea: React.FC<StagingAreaProps> = ({
@@ -18,7 +17,6 @@ export const StagingArea: React.FC<StagingAreaProps> = ({
   onEdit,
   onDelete,
   onDownloadExcel,
-  onPublishBot,
 }) => {
   const [activeTab, setActiveTab] = useState<'all' | 'ready' | 'published'>('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -114,7 +112,6 @@ export const StagingArea: React.FC<StagingAreaProps> = ({
               onEdit={onEdit}
               onDelete={onDelete}
               onDownloadExcel={onDownloadExcel}
-              onPublishBot={onPublishBot}
             />
           ))}
         </div>
