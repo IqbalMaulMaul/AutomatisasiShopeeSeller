@@ -80,9 +80,8 @@ export class ShopeeExcelExporter {
     };
 
     validProducts.forEach((product) => {
-      // Normalise weight: 0.1 - 50 kg, default 0.3 kg
-      const rawKg = (product.weightGrams || 300) / 1000;
-      const weightKg = rawKg >= 0.05 && rawKg <= 50 ? parseFloat(rawKg.toFixed(2)) : 0.3;
+      // Normalise weight: in GRAMS (e.g. 300), default 300 grams
+      const weightGrams = Math.max(1, Math.round(product.weightGrams || 300));
       const catId = product.categoryId || CategoryMatcher.matchCategoryId(product.title, product.categoryName).id;
 
       const variationList = product.variations?.[0]?.options || [];
@@ -100,19 +99,19 @@ export class ShopeeExcelExporter {
             writeCell(r, 22, product.mainImage || '');                  // Foto Sampul
             writeCell(r, 23, product.images[1] || '');                  // Foto Produk 1
             writeCell(r, 24, product.images[2] || '');                  // Foto Produk 2
-            writeCell(r, 31, weightKg);                                  // Berat (kg)
-            writeCell(r, 32, 20);                                        // Panjang (cm)
-            writeCell(r, 33, 15);                                        // Lebar (cm)
-            writeCell(r, 34, 10);                                        // Tinggi (cm)
-            writeCell(r, 37, 'Aktif');                                   // Reguler (Cashless) - ONLY enable supported channel
           }
 
           writeCell(r, 10, `INT-${product.sku}`);                       // Kode Integrasi Variasi
           writeCell(r, 11, 'Pilihan');                                   // Nama Variasi 1
           writeCell(r, 12, variant.optionName);                         // Varian untuk Variasi 1
-          writeCell(r, 16, variant.price || product.finalPrice);        // Harga
+          writeCell(r, 16, Math.round(variant.price || product.finalPrice)); // Harga
           writeCell(r, 17, variant.stock || product.stock || 100);      // Stok
           writeCell(r, 18, variant.sku || `${product.sku}-${idx + 1}`); // Kode Variasi
+          writeCell(r, 31, weightGrams);                                 // Berat (gram) - WAJIB
+          writeCell(r, 32, 20);                                        // Panjang (cm)
+          writeCell(r, 33, 15);                                        // Lebar (cm)
+          writeCell(r, 34, 10);                                        // Tinggi (cm)
+          writeCell(r, 37, 'Aktif');                                   // Reguler (Cashless)
 
           nextRowIdx++;
         });
@@ -123,13 +122,13 @@ export class ShopeeExcelExporter {
         writeCell(r, 1, product.title.substring(0, 255));               // Nama Produk - WAJIB
         writeCell(r, 2, product.description.substring(0, 3000));        // Deskripsi - WAJIB
         writeCell(r, 8, product.sku);                                   // SKU Induk - WAJIB
-        writeCell(r, 16, product.finalPrice);                           // Harga - WAJIB number
+        writeCell(r, 16, Math.round(product.finalPrice));               // Harga - WAJIB number
         writeCell(r, 17, product.stock || 100);                         // Stok - number
         // NOTE: Column 18 (Kode Variasi) MUST BE LEFT EMPTY for single products without variations
         writeCell(r, 22, product.mainImage || '');                      // Foto Sampul - WAJIB
         writeCell(r, 23, product.images[1] || '');                      // Foto Produk 1
         writeCell(r, 24, product.images[2] || '');                      // Foto Produk 2
-        writeCell(r, 31, weightKg);                                      // Berat (kg) - WAJIB number
+        writeCell(r, 31, weightGrams);                                  // Berat (gram) - WAJIB number in grams
         writeCell(r, 32, 20);                                            // Panjang (cm) - number
         writeCell(r, 33, 15);                                            // Lebar (cm) - number
         writeCell(r, 34, 10);                                            // Tinggi (cm) - number
