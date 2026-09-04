@@ -25,6 +25,7 @@ export default function DashboardPage() {
   const [selectedProduct, setSelectedProduct] = useState<ShopeeProductMapping | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
 
@@ -43,6 +44,18 @@ export default function DashboardPage() {
       }
     } catch (err) {
       console.error('Failed to load products:', err);
+    }
+  };
+
+  const handleManualRefresh = async () => {
+    setIsRefreshing(true);
+    try {
+      await fetchProducts();
+      showToast('Data produk berhasil diperbarui!');
+    } catch {
+      showToast('Gagal memuat ulang data produk.', 'error');
+    } finally {
+      setTimeout(() => setIsRefreshing(false), 500);
     }
   };
 
@@ -152,7 +165,8 @@ export default function DashboardPage() {
         <Header
           title={getPageTitle()}
           onDownloadAllExcel={() => handleDownloadExcel()}
-          onRefresh={fetchProducts}
+          onRefresh={handleManualRefresh}
+          isRefreshing={isRefreshing}
           productCount={products.length}
         />
 

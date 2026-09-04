@@ -12,6 +12,7 @@ interface HeaderProps {
   subtitle?: string;
   onDownloadAllExcel: () => void;
   onRefresh: () => void;
+  isRefreshing?: boolean;
   productCount: number;
 }
 
@@ -19,6 +20,7 @@ export const Header: React.FC<HeaderProps> = ({
   title = 'Jualin ➔ Shopee Automation Hub',
   onDownloadAllExcel,
   onRefresh,
+  isRefreshing = false,
   productCount,
 }) => {
   return (
@@ -49,10 +51,11 @@ export const Header: React.FC<HeaderProps> = ({
 
         <button
           onClick={onRefresh}
-          className="p-2 rounded-xl bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors shadow-sm"
-          title="Refresh Data"
+          disabled={isRefreshing}
+          className="p-2.5 rounded-xl bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-indigo-600 active:scale-95 transition-all shadow-sm disabled:opacity-60 disabled:cursor-not-allowed"
+          title="Refresh Data Produk"
         >
-          <RefreshCw className="w-4 h-4" />
+          <RefreshCw className={`w-4 h-4 transition-all ${isRefreshing ? 'animate-spin text-indigo-600' : ''}`} />
         </button>
       </div>
     </header>
