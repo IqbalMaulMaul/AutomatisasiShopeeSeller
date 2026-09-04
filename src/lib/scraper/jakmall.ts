@@ -210,17 +210,7 @@ export class JakmallScraper {
 
     if (isInStock) {
       const explicitStockMatch = html.match(/(?:stok|sisa)\s*:?\s*(\d+)/i);
-      if (explicitStockMatch) {
-        stock = parseInt(explicitStockMatch[1], 10);
-      } else {
-        // Deterministic realistic stock based on SKU hash (range 35 - 95)
-        let hash = 0;
-        for (let i = 0; i < sku.length; i++) {
-          hash = (hash << 5) - hash + sku.charCodeAt(i);
-          hash |= 0;
-        }
-        stock = 35 + (Math.abs(hash) % 61);
-      }
+      stock = explicitStockMatch ? parseInt(explicitStockMatch[1], 10) : 100;
     } else {
       stock = 0;
     }
