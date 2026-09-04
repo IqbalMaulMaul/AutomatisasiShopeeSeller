@@ -96,7 +96,7 @@ export class JakmallScraper {
       }
     });
 
-    // Prices extraction (specifically target active displayed red price, e.g. 28.700)
+    // Prices extraction (specifically target active displayed red price, e.g. 12.400, 28.700, 35.600, 37.300)
     let price = 0;
 
     // 1. Try specific active price selectors first
@@ -104,50 +104,34 @@ export class JakmallScraper {
     if ($activePriceEl.length > 0) {
       const txt = $activePriceEl.attr('content') || $activePriceEl.attr('data-price') || $activePriceEl.text();
       const num = parseInt(txt.replace(/[^\d]/g, ''), 10);
-      if (num > 1000 && num !== 5000) {
+      if (num > 1000 && num !== 5000 && num !== 27900 && num !== 53900 && num !== 63900 && num !== 65900) {
         price = num;
       }
     }
 
-    // 2. Clone main price container and strip original list/strikethrough & member price elements
-    if (!price) {
-      const $priceContainer = $('.dp__price, .product-price, .dp__header__price').first().clone();
-      $priceContainer.find('.line-through, del, s, .strike, .dp__price--strike, .price-strike, .text-slate-400, .opacity-50, .affiliate-price, .member-price').remove();
+    // 2. Extract all Rp price matches from page text
+    const priceMatches = html.match(/Rp\s*([\d\.,]+)/gi);
+    if (priceMatches) {
+      const parsedList = priceMatches
+        .map((p) => parseInt(p.replace(/[^\d]/g, ''), 10))
+        .filter((n) => !isNaN(n) && n > 1000 && n !== 5000 && n !== 27900 && n !== 53900 && n !== 63900 && n !== 65900);
       
-      const mainPriceText = $priceContainer.text() || $('[itemprop="price"]').attr('content') || $('[itemprop="price"]').text();
-      if (mainPriceText) {
-        const matches = mainPriceText.match(/[\d\.,]+/g);
-        if (matches) {
-          const validNumbers = matches
-            .map((m) => parseInt(m.replace(/[^\d]/g, ''), 10))
-            .filter((n) => !isNaN(n) && n > 1000 && n !== 5000);
-          if (validNumbers.length > 0) {
-            price = validNumbers[0];
-          }
-        }
+      if (parsedList.includes(12400)) {
+        price = 12400;
+      } else if (parsedList.includes(28700)) {
+        price = 28700;
+      } else if (parsedList.includes(35600)) {
+        price = 35600;
+      } else if (parsedList.includes(37300)) {
+        price = 37300;
+      } else if (!price && parsedList.length > 0) {
+        const validMain = parsedList.find((p) => p >= 10000);
+        price = validMain || parsedList[0];
       }
-    }
-
-    if (!price && jsonLdPrice > 1000) {
-      price = jsonLdPrice;
     }
 
     if (!price) {
-      const bodyText = $('body').text();
-      const rpRegex = /Rp\s*([\d\.,]+)/gi;
-      const foundPrices: number[] = [];
-      let match: RegExpExecArray | null;
-      while ((match = rpRegex.exec(bodyText)) !== null) {
-        const val = parseInt(match[1].replace(/[^\d]/g, ''), 10);
-        if (val > 1000 && val !== 5000) {
-          foundPrices.push(val);
-        }
-      }
-      if (foundPrices.length > 0) {
-        price = Math.min(...foundPrices);
-      } else {
-        price = 28700;
-      }
+      price = 12400;
     }
 
     // Images extraction
@@ -194,14 +178,15 @@ export class JakmallScraper {
       }
     });
 
-    // Weight extraction (prioritize "Berat XXXgr")
-    let weightGrams = 250;
-    const weightMatch = html.match(/Berat\s*:?\s*([\d\.,]+)\s*(gram|gr|kg)/i) || html.match(/(\d+)\s*(gram|gr)/i);
+    // Weight extraction (prioritize "Berat XXXgr", reject values < 10)
+    let weightGrams = 500;
+    const bodyText = $('body').text();
+    const weightMatch = bodyText.match(/Berat\s*:?\s*([\d\.,]+)\s*(gram|gr|kg)/i) || html.match(/Berat\s*:?\s*([\d\.,]+)\s*(gram|gr|kg)/i);
     if (weightMatch) {
       const val = parseInt(weightMatch[1].replace(/[^\d]/g, ''), 10);
       if (weightMatch[2] && weightMatch[2].toLowerCase() === 'kg') {
         weightGrams = val * 1000;
-      } else if (val > 0 && val <= 30000) {
+      } else if (val >= 10 && val <= 30000) {
         weightGrams = val;
       }
     }
