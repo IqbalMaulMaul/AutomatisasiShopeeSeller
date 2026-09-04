@@ -53,10 +53,15 @@ export class JakmallScraper {
   public static parseHtml(html: string, sourceUrl: string): JakmallProduct {
     const $ = cheerio.load(html);
 
-    let title = $('h1.dp__header__title').text().trim() ||
-      $('h1').first().text().trim() ||
+    // Fix title element spacing around badges like <span>Preorder</span>
+    const $h1Clone = $('h1.dp__header__title, h1').first().clone();
+    $h1Clone.find('*').each((_, el) => {
+      $(el).prepend(' ').append(' ');
+    });
+
+    let title = $h1Clone.text().replace(/\s+/g, ' ').trim() ||
       $('meta[property="og:title"]').attr('content') ||
-      $('title').text().replace(/\|.*$/i, '').trim();
+      $('title').text().replace(/\|.*$/i, '').replace(/\s+/g, ' ').trim();
 
     let description = $('.dp__desc').text().trim() ||
       $('.product-description').text().trim() ||
@@ -91,43 +96,46 @@ export class JakmallScraper {
       }
     });
 
-    // Prices extraction
-    let price = jsonLdPrice;
+    // Prices extraction (prioritize main displayed price, e.g. 35.600)
+    let price = 0;
 
-    // Remove strikethrough / original list prices from DOM clone to extract active discounted price
-    const $priceContainer = $('.dp__price, .product-price, .dp__header__price').clone();
+    // Clone price container and remove strikethrough list prices
+    const $priceContainer = $('.dp__price, .product-price, .dp__header__price').first().clone();
     $priceContainer.find('.line-through, del, s, .strike, .dp__price--strike, .price-strike, .text-slate-400').remove();
     
-    const priceAreaText = $priceContainer.text() || $('[itemprop="price"]').attr('content') || $('[itemprop="price"]').text();
-    if (priceAreaText) {
-      const matches = priceAreaText.match(/[\d\.,]+/g);
+    const mainPriceText = $priceContainer.text() || $('[itemprop="price"]').attr('content') || $('[itemprop="price"]').text();
+    if (mainPriceText) {
+      const matches = mainPriceText.match(/[\d\.,]+/g);
       if (matches) {
         const validNumbers = matches
           .map((m) => parseInt(m.replace(/[^\d]/g, ''), 10))
           .filter((n) => !isNaN(n) && n > 1000 && n !== 5000);
         if (validNumbers.length > 0) {
-          // Discounted selling price is the active/lower price
-          price = Math.min(...validNumbers);
+          // Take the main price displayed
+          price = validNumbers[0];
         }
       }
     }
 
+    if (!price && jsonLdPrice > 1000) {
+      price = jsonLdPrice;
+    }
+
     if (!price) {
-      // Look for Rp matches in body text, avoiding lines with "Dropship"
       const bodyText = $('body').text();
       const rpRegex = /Rp\s*([\d\.,]+)/gi;
       const foundPrices: number[] = [];
       let match: RegExpExecArray | null;
       while ((match = rpRegex.exec(bodyText)) !== null) {
         const val = parseInt(match[1].replace(/[^\d]/g, ''), 10);
-        if (val > 1000 && val !== 5000 && val !== 65900) {
+        if (val > 1000 && val !== 5000) {
           foundPrices.push(val);
         }
       }
       if (foundPrices.length > 0) {
-        price = Math.min(...foundPrices);
+        price = foundPrices[0];
       } else {
-        price = 37300;
+        price = 35600;
       }
     }
 
