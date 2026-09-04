@@ -51,9 +51,12 @@ export const MarkupSettingsPanel: React.FC<MarkupSettingsPanelProps> = ({
               min="0"
               max="500"
               step="1"
-              value={markupPercent}
-              onChange={(e) => setMarkupPercent(Math.max(0, Number(e.target.value)))}
-              placeholder="15"
+              value={markupPercent === 0 ? '' : markupPercent}
+              onChange={(e) => {
+                const raw = e.target.value;
+                setMarkupPercent(raw === '' ? 0 : Math.max(0, Number(raw)));
+              }}
+              placeholder="0"
               className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 font-mono font-bold focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-600"
             />
           </div>
@@ -66,9 +69,14 @@ export const MarkupSettingsPanel: React.FC<MarkupSettingsPanelProps> = ({
             </div>
             <input
               type="number"
+              min="0"
               step="500"
-              value={fixedMargin}
-              onChange={(e) => setFixedMargin(Number(e.target.value))}
+              value={fixedMargin === 0 ? '' : fixedMargin}
+              onChange={(e) => {
+                const raw = e.target.value;
+                setFixedMargin(raw === '' ? 0 : Math.max(0, Number(raw)));
+              }}
+              placeholder="0"
               className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 font-mono font-bold focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-600"
             />
           </div>
