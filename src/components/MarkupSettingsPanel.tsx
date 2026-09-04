@@ -22,7 +22,7 @@ export const MarkupSettingsPanel: React.FC<MarkupSettingsPanelProps> = ({
   setFixedMargin,
 }) => {
   return (
-    <div className="bg-white border border-slate-200/90 rounded-2xl p-6 shadow-sm flex flex-col justify-between space-y-5 h-full w-full">
+    <div className="bg-white border border-slate-200/90 rounded-2xl p-6 shadow-sm space-y-4">
       <div className="space-y-4">
         {/* Title */}
         <div className="flex items-center gap-3">
