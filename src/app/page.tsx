@@ -232,7 +232,7 @@ export default function DashboardPage() {
         </main>
 
         <footer className="py-4 text-center text-xs text-slate-400 border-t border-slate-200">
-          © 2026 Jualin Automation Hub. All rights reserved.
+          © 2026 Jualin Automation Hub. IqbalMaulanaDhiti
         </footer>
       </div>
 
