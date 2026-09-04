@@ -21,7 +21,9 @@ export class ProductNormalizer {
     const fixedMargin = options.fixedMargin ?? 2500;
 
     // 1. Title formatting (Shopee max 120 chars, clean symbols, NO EMOJIS)
-    let formattedTitle = this.removeEmojis((options.titlePrefix || '') + jakmall.title.trim() + (options.titleSuffix || ''));
+    let prefix = options.titlePrefix || '';
+    if (prefix && !prefix.endsWith(' ')) prefix += ' ';
+    let formattedTitle = this.removeEmojis(prefix + jakmall.title.trim() + (options.titleSuffix || ''));
     if (formattedTitle.length > 120) {
       formattedTitle = formattedTitle.substring(0, 117) + '...';
     }

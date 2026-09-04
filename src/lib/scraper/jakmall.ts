@@ -93,15 +93,35 @@ export class JakmallScraper {
 
     // Prices extraction
     let price = jsonLdPrice;
-    const priceText = $('.dp__price .price, .product-price, .dp__header__price, [data-price]').text();
-    if (!price && priceText) {
-      const match = priceText.replace(/[^\d]/g, '');
-      if (match) price = parseInt(match, 10);
-    }
+    
+    // Check specific Jakmall main price selectors
+    $('.dp__price, [itemprop="price"], .product-price, .dp__header__price, .price').each((_, el) => {
+      if (!price) {
+        const txt = $(el).attr('content') || $(el).attr('data-price') || $(el).text();
+        const num = parseInt(txt.replace(/[^\d]/g, ''), 10);
+        if (num > 1000 && num !== 5000) {
+          price = num;
+        }
+      }
+    });
+
     if (!price) {
-      const anyRp = $('body').text().match(/Rp\s*([\d\.,]+)/i);
-      if (anyRp) price = parseInt(anyRp[1].replace(/[^\d]/g, ''), 10) || 45000;
-      else price = 50000;
+      // Look for Rp matches, avoiding lines with "Dropship"
+      const bodyText = $('body').text();
+      const rpRegex = /Rp\s*([\d\.,]+)/gi;
+      let match: RegExpExecArray | null;
+      while ((match = rpRegex.exec(bodyText)) !== null) {
+        const val = parseInt(match[1].replace(/[^\d]/g, ''), 10);
+        if (val > 1000 && val !== 5000) {
+          price = val;
+          break;
+        }
+      }
+      if (!price) {
+        const anyRp = bodyText.match(/Rp\s*([\d\.,]+)/i);
+        if (anyRp) price = parseInt(anyRp[1].replace(/[^\d]/g, ''), 10) || 37300;
+        else price = 37300;
+      }
     }
 
     // Images extraction
@@ -148,13 +168,16 @@ export class JakmallScraper {
       }
     });
 
-    // Weight extraction
+    // Weight extraction (prioritize "Berat XXXgr")
     let weightGrams = 250;
-    const weightMatch = html.match(/(\d+)\s*(gram|gr|kg)/i);
+    const weightMatch = html.match(/Berat\s*:?\s*([\d\.,]+)\s*(gram|gr|kg)/i) || html.match(/(\d+)\s*(gram|gr)/i);
     if (weightMatch) {
-      const val = parseInt(weightMatch[1], 10);
-      if (weightMatch[2].toLowerCase() === 'kg') weightGrams = val * 1000;
-      else weightGrams = val;
+      const val = parseInt(weightMatch[1].replace(/[^\d]/g, ''), 10);
+      if (weightMatch[2] && weightMatch[2].toLowerCase() === 'kg') {
+        weightGrams = val * 1000;
+      } else if (val > 0 && val <= 30000) {
+        weightGrams = val;
+      }
     }
 
     return {
