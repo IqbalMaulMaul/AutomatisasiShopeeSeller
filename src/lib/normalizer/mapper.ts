@@ -73,7 +73,7 @@ export class ProductNormalizer {
       markupPercent,
       fixedMargin,
       finalPrice: finalBasePrice,
-      stock: jakmall.stock || 100,
+      stock: typeof jakmall.stock === 'number' ? jakmall.stock : 50,
       weightGrams: jakmall.weightGrams || options.defaultWeightGrams || 250,
       condition: 'Baru',
       mainImage: allImages[0] || '',
