@@ -179,9 +179,9 @@ export class JakmallScraper {
     });
 
     // Weight extraction (prioritize "Berat XXXgr", reject values < 10)
-    let weightGrams = 500;
+    let weightGrams = 250;
     const bodyText = $('body').text();
-    const weightMatch = bodyText.match(/Berat\s*:?\s*([\d\.,]+)\s*(gram|gr|kg)/i) || html.match(/Berat\s*:?\s*([\d\.,]+)\s*(gram|gr|kg)/i);
+    const weightMatch = bodyText.match(/Berat[\s\S]{0,30}?([\d\.,]+)\s*(gram|gr|kg)/i) || html.match(/Berat[\s\S]{0,30}?([\d\.,]+)\s*(gram|gr|kg)/i);
     if (weightMatch) {
       const val = parseInt(weightMatch[1].replace(/[^\d]/g, ''), 10);
       if (weightMatch[2] && weightMatch[2].toLowerCase() === 'kg') {

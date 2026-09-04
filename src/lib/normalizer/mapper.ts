@@ -30,7 +30,7 @@ export class ProductNormalizer {
 
     // 2. Price calculation with margin
     const calculatePrice = (base: number) => {
-      const calculated = Math.round((base * (1 + markupPercent / 100) + fixedMargin) / 100) * 100;
+      const calculated = Math.round(base * (1 + markupPercent / 100) + fixedMargin);
       return Math.max(calculated, 1000);
     };
 
