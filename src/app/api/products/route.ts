@@ -25,3 +25,13 @@ export async function PUT(req: NextRequest) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }
+
+export async function DELETE() {
+  try {
+    await JobStore.deleteAll();
+    return NextResponse.json({ success: true, message: 'Semua produk berhasil dihapus.' });
+  } catch (err: unknown) {
+    const error = err as Error;
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+  }
+}

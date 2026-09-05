@@ -25,10 +25,9 @@ export default function DashboardPage() {
   const [selectedProduct, setSelectedProduct] = useState<ShopeeProductMapping | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
+  const [isDeleteAllConfirmOpen, setIsDeleteAllConfirmOpen] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
-
-
 
   const showToast = (message: string, type: 'success' | 'error' = 'success') => {
     setToast({ message, type });
@@ -121,6 +120,28 @@ export default function DashboardPage() {
     }
   };
 
+  const onRequestDeleteAll = () => {
+    if (products.length === 0) return;
+    setIsDeleteAllConfirmOpen(true);
+  };
+
+  const executeDeleteAll = async () => {
+    try {
+      const res = await fetch('/api/products', { method: 'DELETE' });
+      const data = await res.json();
+      if (data.success) {
+        showToast('Seluruh produk staging berhasil dihapus!');
+        fetchProducts();
+      } else {
+        showToast(data.error || 'Gagal menghapus produk.', 'error');
+      }
+    } catch {
+      showToast('Gagal menghapus produk.', 'error');
+    } finally {
+      setIsDeleteAllConfirmOpen(false);
+    }
+  };
+
   const handleSaveEdit = async () => {
     if (!selectedProduct) return;
     try {
@@ -199,6 +220,7 @@ export default function DashboardPage() {
                   setIsEditModalOpen(true);
                 }}
                 onDelete={onRequestDelete}
+                onDeleteAll={onRequestDeleteAll}
                 onDownloadExcel={handleDownloadExcel}
               />
             </>
@@ -233,6 +255,7 @@ export default function DashboardPage() {
                 setIsEditModalOpen(true);
               }}
               onDelete={onRequestDelete}
+              onDeleteAll={onRequestDeleteAll}
               onDownloadExcel={handleDownloadExcel}
             />
           )}
@@ -267,6 +290,17 @@ export default function DashboardPage() {
         type="danger"
         onConfirm={executeDelete}
         onCancel={() => setDeleteTargetId(null)}
+      />
+
+      <ConfirmModal
+        isOpen={isDeleteAllConfirmOpen}
+        title="Hapus Semua Produk Staging?"
+        message={`Apakah Anda yakin ingin menghapus seluruh (${products.length}) produk dari daftar staging? Seluruh data hasil ekstraksi akan dibersihkan agar tidak masuk ke file Excel.`}
+        confirmText="Ya, Hapus Semua"
+        cancelText="Batal"
+        type="danger"
+        onConfirm={executeDeleteAll}
+        onCancel={() => setIsDeleteAllConfirmOpen(false)}
       />
 
       <Toast toast={toast} />

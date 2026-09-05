@@ -199,6 +199,32 @@ export class JobStore {
     return false;
   }
 
+  public static async deleteAll(): Promise<boolean> {
+    if (isSupabaseConfigured && supabase) {
+      try {
+        const { error } = await supabase.from('products').delete().neq('id', '');
+        if (error) {
+          console.error('[Supabase DB Error] deleteAll:', error.message);
+          return false;
+        }
+        return true;
+      } catch (err) {
+        console.error('[Supabase DB Exception] deleteAll:', err);
+        return false;
+      }
+    }
+
+    // Local JSON Fallback
+    this.ensureLocalStorage();
+    try {
+      fs.writeFileSync(DATA_FILE, JSON.stringify([], null, 2), 'utf-8');
+      return true;
+    } catch {
+      // ignore
+    }
+    return false;
+  }
+
   public static async updateStatus(
     id: string,
     status: ShopeeProductMapping['status'],
